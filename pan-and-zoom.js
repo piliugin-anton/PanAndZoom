@@ -12,7 +12,7 @@ class PanAndZoom {
 
 		Object.defineProperties(this, {
 			transform: {
-				get: () => this.applyTransform([
+				get: () => this.mergeMatrices([
 					1, 0, 0,        // Identity matrix
 					0, 1, 0,
 					0, 0, 1,
@@ -37,7 +37,10 @@ class PanAndZoom {
 					if(toX !== fromX || toY !== fromY){
 						originX = toX;
 						originY = toY;
-						this.update();
+						this.onUpdateOrigin({
+							from: [fromX, fromY],
+							to:   [toX,   toY],
+						});
 					}
 				},
 			},
@@ -49,7 +52,10 @@ class PanAndZoom {
 					to = +to || 0;
 					if(to !== from){
 						originX = to;
-						this.update();
+						this.onUpdateOrigin({
+							from: [from, originY],
+							to:   [to,   originY],
+						});
 					}
 				},
 			},
@@ -61,7 +67,10 @@ class PanAndZoom {
 					to = +to || 0;
 					if(to !== from){
 						originY = to;
-						this.update();
+						this.onUpdateOrigin({
+							from: [originX, from],
+							to:   [originX, to],
+						});
 					}
 				},
 			},
@@ -76,7 +85,10 @@ class PanAndZoom {
 					if(toX !== fromX || toY !== fromY){
 						panX = toX;
 						panY = toY;
-						this.update();
+						this.onUpdatePan({
+							from: [fromX, fromY],
+							to:   [toX,   toY],
+						});
 					}
 				},
 			},
@@ -88,7 +100,10 @@ class PanAndZoom {
 					to = +to || 0;
 					if(to !== from){
 						panX = to;
-						this.update();
+						this.onUpdatePan({
+							from: [from, panY],
+							to:   [to,   panY],
+						});
 					}
 				},
 			},
@@ -100,7 +115,10 @@ class PanAndZoom {
 					to = +to || 0;
 					if(to !== from){
 						panY = to;
-						this.update();
+						this.onUpdatePan({
+							from: [panX, from],
+							to:   [panX, to],
+						});
 					}
 				},
 			},
@@ -112,7 +130,7 @@ class PanAndZoom {
 					to = Math.max(0, +to || 1);
 					if(to !== from){
 						zoom = to;
-						this.update();
+						this.onUpdateZoom({from, to});
 					}
 				},
 			},
@@ -121,11 +139,31 @@ class PanAndZoom {
 
 
 	/**
+	 * Apply the current transformation matrix to an array of points.
+	 *
+	 * @param  {Number[]} points
+	 * @return {Number[]}
+	 */
+	applyTransform(points){
+		const results = [];
+		for(const point of points){
+			const m = this.mergeMatrices([
+				1, 0, point[0],
+				0, 1, point[1],
+				0, 0, 1,
+			], this.transform);
+			results.push([m[2], m[5]]);
+		}
+		return results;
+	}
+
+
+	/**
 	 * Concatenate two affine transformation matrices.
 	 * @param  {Number[][]} matrices
 	 * @return {Number[]}
 	 */
-	applyTransform(...matrices){
+	mergeMatrices(...matrices){
 		let result = matrices[0] || [1,0,0,0,1,0,0,0,1];
 
 		if(matrices.length < 2)
@@ -153,4 +191,9 @@ class PanAndZoom {
 		}
 		return result;
 	}
+
+	onUpdate       (matrix)     { }
+	onUpdateOrigin ({from, to}) { this.onUpdate(); }
+	onUpdatePan    ({from, to}) { this.onUpdate(); }
+	onUpdateZoom   ({from, to}) { this.onUpdate(); }
 }

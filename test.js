@@ -19,20 +19,10 @@ const points = [
 	[width / 2 - radiusX, height / 2 + radiusY],
 ];
 
-screen.polygon(points);
-
-/*
-screen.polygon([
-	[10, 10],
-	[20, 10],
-	[20, 20],
-	[10, 20],
-]);
-screen
-	.drawLine(8, -8)
-	.left(8)
-	.drawLine(8, 8)
-*/
-
-process.stdout.write(screen.asciify());
-
+const viewState = new PanAndZoom();
+viewState.onUpdate = () => {
+	screen.polygon(viewState.applyTransform(points));
+	process.stdout.write(screen.asciify());
+};
+viewState.panX = +process.argv[2] || 0;
+viewState.panY = +process.argv[3] || 0;
