@@ -12,18 +12,19 @@ class PanAndZoom {
 
 		Object.defineProperties(this, {
 			transform: {
-				get: () => {
-					const matrix = [
-						1, 0, 0,
-						0, 1, 0,
-						0, 0, 1,
-					];
-					this.applyTransform(matrix, [
-						zoom, 0,    0,
-						0,    zoom, 0,
-						0,    0,    1,
-					]);
-				}
+				get: () => this.applyTransform([
+					1, 0, 0,        // Identity matrix
+					0, 1, 0,
+					0, 0, 1,
+				],[
+					1, 0, panX,     // Translation (Pan)
+					0, 1, panY,
+					0, 0, 1,
+				],[
+					zoom, 0,    0,  // Scale (Zoom)
+					0,    zoom, 0,
+					0,    0,    1,
+				]),
 			},
 
 			origin: {
@@ -121,13 +122,35 @@ class PanAndZoom {
 
 	/**
 	 * Concatenate two affine transformation matrices.
-	 * @param  {Number[]} A
-	 * @param  {Number[]} B
+	 * @param  {Number[][]} matrices
 	 * @return {Number[]}
 	 */
-	applyTransform(A, B){
-		return [
+	applyTransform(...matrices){
+		let result = matrices[0] || [1,0,0,0,1,0,0,0,1];
+
+		if(matrices.length < 2)
+			return result;
+
+		const {length} = matrices;
+		for(let i = 1; i < length; ++i){
+			const [
+				a, b, c,
+				p, q, r,
+				u, v, w,
+			] = result;
+
+			const [
+				A, B, C,
+				P, Q, R,
+				U, V, W,
+			] = matrices[i];
 			
-		];
+			result = [
+				(a*A)+(b*P)+(c*U), (a*B)+(b*Q)+(c*V), (a*C)+(b*R)+(c*W),
+				(p*A)+(q*P)+(r*U), (p*B)+(q*Q)+(r*V), (p*C)+(q*R)+(r*W),
+				(u*A)+(v*P)+(w*U), (u*B)+(v*Q)+(w*V), (u*C)+(v*R)+(w*W),
+			];
+		}
+		return result;
 	}
 }
