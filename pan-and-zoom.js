@@ -3,12 +3,27 @@
 module.exports =
 
 class PanAndZoom {
-	constructor(){
-		let panX    = 0;
-		let panY    = 0;
-		let zoom    = 1;
-		let originX = 0;
-		let originY = 0;
+	constructor(args = {}){
+		let {
+			panX         = 0,
+			panY         = 0,
+			zoom         = 1,
+			originX      = 0,
+			originY      = 0,
+			update       = () => {},
+			updatePan    = () => {},
+			updateZoom   = () => {},
+			updateOrigin = () => {},
+			updateDelay  = 0,
+			updateFirst  = true,
+		} = args;
+
+		const debounced = {
+			update:       null,
+			updatePan:    null,
+			updateZoom:   null,
+			updateOrigin: null,
+		};
 
 		Object.defineProperties(this, {
 			transform: {
@@ -37,10 +52,8 @@ class PanAndZoom {
 					if(toX !== fromX || toY !== fromY){
 						originX = toX;
 						originY = toY;
-						this.onUpdateOrigin({
-							from: [fromX, fromY],
-							to:   [toX,   toY],
-						});
+						this.updateOrigin([fromX, fromY], [toX, toY]);
+						this.update();
 					}
 				},
 			},
@@ -52,10 +65,8 @@ class PanAndZoom {
 					to = +to || 0;
 					if(to !== from){
 						originX = to;
-						this.onUpdateOrigin({
-							from: [from, originY],
-							to:   [to,   originY],
-						});
+						this.updateOrigin([from, originY], [to, originY]);
+						this.update();
 					}
 				},
 			},
@@ -67,10 +78,8 @@ class PanAndZoom {
 					to = +to || 0;
 					if(to !== from){
 						originY = to;
-						this.onUpdateOrigin({
-							from: [originX, from],
-							to:   [originX, to],
-						});
+						this.updateOrigin([originX, from], [originX, to]);
+						this.update();
 					}
 				},
 			},
@@ -85,10 +94,8 @@ class PanAndZoom {
 					if(toX !== fromX || toY !== fromY){
 						panX = toX;
 						panY = toY;
-						this.onUpdatePan({
-							from: [fromX, fromY],
-							to:   [toX,   toY],
-						});
+						this.updatePan([fromX, fromY], [toX, toY]);
+						this.update();
 					}
 				},
 			},
@@ -100,10 +107,8 @@ class PanAndZoom {
 					to = +to || 0;
 					if(to !== from){
 						panX = to;
-						this.onUpdatePan({
-							from: [from, panY],
-							to:   [to,   panY],
-						});
+						this.updatePan([from, panY], [to, panY]);
+						this.update();
 					}
 				},
 			},
@@ -115,10 +120,8 @@ class PanAndZoom {
 					to = +to || 0;
 					if(to !== from){
 						panY = to;
-						this.onUpdatePan({
-							from: [panX, from],
-							to:   [panX, to],
-						});
+						this.updatePan([panX, from], [panX, to]);
+						this.update();
 					}
 				},
 			},
@@ -130,11 +133,84 @@ class PanAndZoom {
 					to = Math.max(0, +to || 1);
 					if(to !== from){
 						zoom = to;
-						this.onUpdateZoom({from, to});
+						this.updateZoom(from, to);
+						this.update();
+					}
+				},
+			},
+
+			update: {
+				get: () => debounced.update || update,
+				set: to => {
+					if("function" !== typeof to)
+						return;
+					update = to;
+					debounced.update = this.debounce(to);
+				},
+			},
+
+			updateOrigin: {
+				get: () => debounced.updateOrigin || updateOrigin,
+				set: to => {
+					if("function" !== typeof to)
+						return;
+					update = to;
+					debounced.updateOrigin = this.debounce(to);
+				},
+			},
+
+			updatePan: {
+				get: () => debounced.updatePan || updatePan,
+				set: to => {
+					if("function" !== typeof to)
+						return;
+					update = to;
+					debounced.updatePan = this.debounce(to);
+				},
+			},
+
+			updateZoom: {
+				get: () => debounced.updateZoom || updateZoom,
+				set: to => {
+					if("function" !== typeof to)
+						return;
+					update = to;
+					debounced.updateZoom = this.debounce(to);
+				},
+			},
+
+			updateDelay: {
+				get: () => updateDelay,
+				set: to => {
+					const from = updateDelay;
+					to = Math.max(-1, +to || 0);
+					if(to !== from){
+						to = from;
+						redebounce();
+					}
+				},
+			},
+
+			updateFirst: {
+				get: () => updateFirst,
+				set: to => {
+					const from = updateFirst;
+					if((to = !!to) !== from){
+						to = from;
+						redebounce();
 					}
 				},
 			},
 		});
+
+		// Force regeneration of debounced callbacks
+		const redebounce = () => {
+			this.update       = update;
+			this.updateOrigin = updateOrigin;
+			this.updatePan    = updatePan;
+			this.updateZoom   = updateZoom;
+		};
+		redebounce();
 	}
 
 
@@ -192,8 +268,37 @@ class PanAndZoom {
 		return result;
 	}
 
-	onUpdate       (matrix)     { }
-	onUpdateOrigin ({from, to}) { this.onUpdate(); }
-	onUpdatePan    ({from, to}) { this.onUpdate(); }
-	onUpdateZoom   ({from, to}) { this.onUpdate(); }
+
+	/**
+	 * Stop a callback from firing too quickly.
+	 * @param {Function} fn - Function to debounce
+	 * @return {Function}
+	 */
+	debounce(fn){
+		const limit = this.updateDelay;
+		const asap  = this.updateFirst;
+		if(limit < 0)
+			return;
+		let started, context, args, timing;
+		const delayed = function(){
+			const timeSince = Date.now() - started;
+			if(timeSince >= limit){
+				if(!asap) fn.apply(context, args);
+				if(timing) clearTimeout(timing);
+				timing = context = args = null;
+			}
+			else timing = setTimeout(delayed, limit - timeSince);
+		};
+		return function(){
+			context = this,
+			args    = arguments;
+			if(!limit)
+				return fn.apply(context, args);
+			started = Date.now();
+			if(!timing){
+				if(asap) fn.apply(context, args);
+				timing = setTimeout(delayed, limit);
+			}
+		};
+	}
 }
