@@ -2,6 +2,8 @@
 
 class PanAndZoom {
 	constructor(args = {}){
+		if("function" === typeof args)
+			args = {update: args};
 		let {
 			panX         = 0,
 			panY         = 0,

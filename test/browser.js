@@ -2,20 +2,18 @@
 
 const a = document.getElementById("a");
 const b = document.getElementById("b");
-const paz = new PanAndZoom({
-	update: () => {
-		b.style.transform = paz;
+const paz = new PanAndZoom(() => {
+	b.style.transform = paz;
 
-		const {panX, panY, zoom} = paz;
-		a.style.transformOrigin = [
-			paz.originX,
-			paz.originY,
-		].map(a => a+"px").join(" ");
-		a.style.transform = [
-			`translate(${panX}px, ${panY}px)`,
-			`scale(${zoom})`,
-		].join(" ");
-	},
+	const {panX, panY, zoom} = paz;
+	a.style.transformOrigin = [
+		paz.originX,
+		paz.originY,
+	].map(a => a+"px").join(" ");
+	a.style.transform = [
+		`translate(${panX}px, ${panY}px)`,
+		`scale(${zoom})`,
+	].join(" ");
 });
 
 const controls = [...Array.from(document.forms[0])];
