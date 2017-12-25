@@ -1,7 +1,5 @@
 "use strict";
 
-module.exports =
-
 class PanAndZoom {
 	constructor(args = {}){
 		let {
@@ -28,17 +26,21 @@ class PanAndZoom {
 		Object.defineProperties(this, {
 			transform: {
 				get: () => this.mergeMatrices([
-					1, 0, 0,        // Identity matrix
-					0, 1, 0,
-					0, 0, 1,
-				],[
-					1, 0, panX,     // Translation (Pan)
+					1, 0, panX,
 					0, 1, panY,
 					0, 0, 1,
 				],[
-					zoom, 0,    0,  // Scale (Zoom)
+					1, 0, originX,
+					0, 1, originY,
+					0, 0, 1,
+				],[
+					zoom, 0,    0,
 					0,    zoom, 0,
 					0,    0,    1,
+				],[
+					1, 0, -originX,
+					0, 1, -originY,
+					0, 0, 1,
 				]),
 			},
 
@@ -236,6 +238,7 @@ class PanAndZoom {
 
 	/**
 	 * Concatenate two affine transformation matrices.
+	 *
 	 * @param  {Number[][]} matrices
 	 * @return {Number[]}
 	 */
@@ -271,7 +274,8 @@ class PanAndZoom {
 
 	/**
 	 * Stop a callback from firing too quickly.
-	 * @param {Function} fn - Function to debounce
+	 *
+	 * @param  {Function} fn
 	 * @return {Function}
 	 */
 	debounce(fn){
@@ -301,4 +305,22 @@ class PanAndZoom {
 			}
 		};
 	}
+
+
+	/**
+	 * Generate a CSS-compatible rendition of the current transform matrix.
+	 * @example el.style.transform = panAndZoom;
+	 * @return {String}
+	 */
+	toString(){
+		const [a, c, tx, b, d, ty] = this.transform;
+		return `matrix(${[a, b, c, d, tx, ty].join()})`;
+	}
 }
+
+
+if("object" === typeof module)
+	module.exports = PanAndZoom;
+
+else if("object" === typeof window)
+	Object.assign(window, {PanAndZoom});

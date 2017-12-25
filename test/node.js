@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 "use strict";
 
-const PanAndZoom = require("./pan-and-zoom.js");
-const TextGrid   = require("../Roff.js/lib/text-grid.js");
+const PanAndZoom = require("../pan-and-zoom.js");
+const TextGrid   = require("../../Roff.js/lib/text-grid.js");
 
 const width      = process.stdout.columns;
 const height     = process.stdout.rows - 1;

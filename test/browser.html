@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<title>CSS transforms</title>
+<style>
+*{
+	box-sizing: border-box;
+	tab-size: 4;
+}
+html, body{
+	margin: 0;
+	padding: 0;
+}
+#controls{
+	position: fixed;
+	bottom: 0;
+	left:   0;
+	right:  0;
+	background: rgba(255, 255, 255, 0.8);
+	z-index: 2;
+}
+label{
+	display: block;
+}
+#a, #b{
+	position: absolute;
+	transform-origin: 0 0;
+	font-size: 100px;
+	width:  1em;
+	height: 1em;
+}
+#a{
+	background: rgba(255, 0, 0, 0.25);
+	outline: 1px solid rgba(255, 0, 0, 0.75);
+}
+#b{
+	background: rgba(0, 0, 255, 0.25);
+	outline: 1px solid rgba(0, 0, 255, 0.75);
+}
+</style>
+</head>
+
+
+<body>
+	<div id="a"></div>
+	<div id="b"></div>
+
+	<form id="controls">
+		<label>Pan X:    <input type="number" id="pan-x" value="0" /></label>
+		<label>Pan Y:    <input type="number" id="pan-y" value="0" /></label>
+		<label>Zoom:     <input type="number" id="zoom"  value="1" /></label>
+		<label>Origin X: <input type="number" id="origin-x" value="0"></label>
+		<label>Origin Y: <input type="number" id="origin-y" value="0"></label>
+	</form>
+
+	<script src="../pan-and-zoom.js"></script>
+	<script src="browser.js"></script>
+
+</body>
+</html>
