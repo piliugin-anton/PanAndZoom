@@ -2,6 +2,8 @@
 
 const a = document.getElementById("a");
 const b = document.getElementById("b");
+const v = document.getElementsByClassName("v");
+
 const paz = new PanAndZoom(() => {
 	b.style.transform = paz;
 
@@ -14,7 +16,19 @@ const paz = new PanAndZoom(() => {
 		`translate(${panX}px, ${panY}px)`,
 		`scale(${zoom})`,
 	].join(" ");
+
+	paz.applyTransform([
+		[0,   0],
+		[100, 0],
+		[100, 100],
+		[0,   100],
+	]).forEach((point, index) => {
+		const {style} = v[index];
+		style.left = point[0] + "px";
+		style.top  = point[1] + "px";
+	});
 });
+paz.update();
 
 const controls = [...Array.from(document.forms[0])];
 controls.map(el => {

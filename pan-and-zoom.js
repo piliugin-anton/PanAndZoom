@@ -227,11 +227,11 @@ class PanAndZoom {
 	applyTransform(points){
 		const results = [];
 		for(const point of points){
-			const m = this.mergeMatrices([
+			const m = this.mergeMatrices(this.transform, [
 				1, 0, point[0],
 				0, 1, point[1],
 				0, 0, 1,
-			], this.transform);
+			]);
 			results.push([m[2], m[5]]);
 		}
 		return results;
