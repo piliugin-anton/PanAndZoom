@@ -4,6 +4,7 @@
 const PanAndZoom = require("../pan-and-zoom.js");
 const TextGrid   = require("../../Roff.js/lib/text-grid.js");
 
+const clear      = "\x1B[2J\x1B[1;1H";
 const width      = process.stdout.columns;
 const height     = process.stdout.rows - 1;
 const boxWidth   = 20;
@@ -24,7 +25,7 @@ const viewState = new PanAndZoom({
 	update: () => {
 		const screen = new TextGrid(width, height);
 		screen.polygon(viewState.applyTransform(points));
-		process.stdout.write(screen.asciify() + "\n");
+		process.stdout.write(clear + screen.asciify() + "\n");
 	},
 });
 
