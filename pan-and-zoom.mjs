@@ -32,7 +32,7 @@ export default class PanAndZoom {
 			updateZoom   = () => {},
 			updateOrigin = () => {},
 			updateDelay  = 0,
-			updateFirst  = true,
+			updateEarly  = true,
 		} = args;
 
 		const debounced = {
@@ -314,10 +314,10 @@ export default class PanAndZoom {
 				},
 			},
 
-			updateFirst: {
-				get: () => updateFirst,
+			updateEarly: {
+				get: () => updateEarly,
 				set: to => {
-					const from = updateFirst;
+					const from = updateEarly;
 					if((to = !!to) !== from){
 						to = from;
 						redebounce();
@@ -401,7 +401,7 @@ export default class PanAndZoom {
 	 */
 	debounce(fn){
 		const limit = this.updateDelay;
-		const asap  = this.updateFirst;
+		const asap  = this.updateEarly;
 		if(limit < 0)
 			return fn;
 		let started, context, args, timing;
