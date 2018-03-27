@@ -1,15 +1,32 @@
 "use strict";
 
-class PanAndZoom {
+const NO_MIN = Number.NEGATIVE_INFINITY;
+const NO_MAX = Number.POSITIVE_INFINITY;
+const clamp  = (n, min, max) => Math.min(Math.max(n, min), max);
+
+export default class PanAndZoom {
 	constructor(args = {}){
 		if("function" === typeof args)
 			args = {update: args};
 		let {
 			panX         = 0,
 			panY         = 0,
+			minPanX      = NO_MIN,
+			minPanY      = NO_MIN,
+			maxPanX      = NO_MAX,
+			maxPanY      = NO_MAX,
+			
 			zoom         = 1,
+			minZoom      = 0,
+			maxZoom      = NO_MAX,
+			
 			originX      = 0,
 			originY      = 0,
+			minOriginX   = NO_MIN,
+			minOriginY   = NO_MIN,
+			maxOriginX   = NO_MAX,
+			maxOriginY   = NO_MAX,
+			
 			update       = () => {},
 			updatePan    = () => {},
 			updateZoom   = () => {},
@@ -46,55 +63,16 @@ class PanAndZoom {
 				]),
 			},
 
-			origin: {
-				get: () => [originX, originY],
-				set: to => {
-					const fromX = originX;
-					const fromY = originY;
-					const toX   = +to[0] || 0;
-					const toY   = +to[1] || 0;
-					if(toX !== fromX || toY !== fromY){
-						originX = toX;
-						originY = toY;
-						this.updateOrigin([fromX, fromY], [toX, toY]);
-						this.update();
-					}
-				},
-			},
 
-			originX: {
-				get: () => originX,
-				set: to => {
-					const from = originX;
-					to = +to || 0;
-					if(to !== from){
-						originX = to;
-						this.updateOrigin([from, originY], [to, originY]);
-						this.update();
-					}
-				},
-			},
-
-			originY: {
-				get: () => originY,
-				set: to => {
-					const from = originY;
-					to = +to || 0;
-					if(to !== from){
-						originY = to;
-						this.updateOrigin([originX, from], [originX, to]);
-						this.update();
-					}
-				},
-			},
+			/* Section: Panning */
 
 			pan: {
 				get: () => [panX, panY],
 				set: to => {
 					const fromX = panX;
 					const fromY = panY;
-					const toX   = +to[0] || 0;
-					const toY   = +to[1] || 0;
+					const toX   = clamp(+to[0] || 0, minPanX, maxPanX);
+					const toY   = clamp(+to[1] || 0, minPanY, maxPanY);
 					if(toX !== fromX || toY !== fromY){
 						panX = toX;
 						panY = toY;
@@ -108,7 +86,7 @@ class PanAndZoom {
 				get: () => panX,
 				set: to => {
 					const from = panX;
-					to = +to || 0;
+					to = clamp(+to || 0, minPanX, maxPanX);
 					if(to !== from){
 						panX = to;
 						this.updatePan([from, panY], [to, panY]);
@@ -121,7 +99,7 @@ class PanAndZoom {
 				get: () => panY,
 				set: to => {
 					const from = panY;
-					to = +to || 0;
+					to = clamp(+to || 0, minPanY, maxPanY);
 					if(to !== from){
 						panY = to;
 						this.updatePan([panX, from], [panX, to]);
@@ -129,12 +107,132 @@ class PanAndZoom {
 					}
 				},
 			},
+			
+			minPanX: {
+				get: () => minPanX,
+				set: to => {
+					minPanX = Math.min(+to || 0, maxPanX);
+					if(panX < minPanX)
+						this.panX = minPanX;
+				},
+			},
+			
+			minPanY: {
+				get: () => minPanY,
+				set: to => {
+					minPanY = Math.min(+to || 0, maxPanY);
+					if(panY < minPanY)
+						this.panY = minPanY;
+				},
+			},
+			
+			maxPanX: {
+				get: () => maxPanX,
+				set: to => {
+					maxPanX = Math.max(+to || 0, minPanX);
+					if(panX > maxPanX)
+						this.panX = maxPanX;
+				},
+			},
+			
+			maxPanY: {
+				get: () => maxPanY,
+				set: to => {
+					maxPanY = Math.max(+to || 0, minPanY);
+					if(panY > maxPanY)
+						this.panY = maxPanY;
+				},
+			},
+
+
+			/* Section: Origin */
+			
+			origin: {
+				get: () => [originX, originY],
+				set: to => {
+					const fromX = originX;
+					const fromY = originY;
+					const toX   = clamp(+to[0] || 0, minOriginX, maxOriginX);
+					const toY   = clamp(+to[1] || 0, minOriginY, maxOriginY);
+					if(toX !== fromX || toY !== fromY){
+						originX = toX;
+						originY = toY;
+						this.updateOrigin([fromX, fromY], [toX, toY]);
+						this.update();
+					}
+				},
+			},
+
+			originX: {
+				get: () => originX,
+				set: to => {
+					const from = originX;
+					to = clamp(+to || 0, minOriginX, maxOriginX);
+					if(to !== from){
+						originX = to;
+						this.updateOrigin([from, originY], [to, originY]);
+						this.update();
+					}
+				},
+			},
+
+			originY: {
+				get: () => originY,
+				set: to => {
+					const from = originY;
+					to = clamp(+to || 0, minOriginY, maxOriginY);
+					if(to !== from){
+						originY = to;
+						this.updateOrigin([originX, from], [originX, to]);
+						this.update();
+					}
+				},
+			},
+
+			minOriginX: {
+				get: () => minOriginX,
+				set: to => {
+					minOriginX = Math.min(+to || 0, maxOriginX);
+					if(originX < minOriginX)
+						this.originX = minOriginX;
+				},
+			},
+
+			minOriginY: {
+				get: () => minOriginY,
+				set: to => {
+					minOriginY = Math.min(+to || 0, maxOriginY);
+					if(originY < minOriginY)
+						this.originY = minOriginY;
+				},
+			},
+
+			maxOriginX: {
+				get: () => maxOriginX,
+				set: to => {
+					maxOriginX = Math.max(+to || 0, minOriginX);
+					if(originX > maxOriginX)
+						this.originX = maxOriginX;
+				},
+			},
+
+			maxOriginY: {
+				get: () => maxOriginY,
+				set: to => {
+					maxOriginY = Math.max(+to || 0, minOriginY);
+					if(originY > maxOriginY)
+						this.originY = maxOriginY;
+				},
+			},
+
+
+			/* Section: Zooming */
 
 			zoom: {
 				get: () => zoom,
 				set: to => {
 					const from = zoom;
-					to = Math.max(0, +to || 1);
+					to = clamp(+to || 0, minZoom, maxZoom);
 					if(to !== from){
 						zoom = to;
 						this.updateZoom(from, to);
@@ -142,6 +240,27 @@ class PanAndZoom {
 					}
 				},
 			},
+			
+			minZoom: {
+				get: () => minZoom,
+				set: to => {
+					minZoom = Math.min(+to || 0, maxZoom);
+					if(zoom < minZoom)
+						this.zoom = minZoom;
+				},
+			},
+
+			maxZoom: {
+				get: () => maxZoom,
+				set: to => {
+					maxZoom = Math.max(+to || 0, minZoom);
+					if(zoom > maxZoom)
+						this.zoom = maxZoom;
+				},
+			},
+
+
+			/* Section: Callbacks */
 
 			update: {
 				get: () => debounced.update || update,
@@ -284,7 +403,7 @@ class PanAndZoom {
 		const limit = this.updateDelay;
 		const asap  = this.updateFirst;
 		if(limit < 0)
-			return;
+			return fn;
 		let started, context, args, timing;
 		const delayed = function(){
 			const timeSince = Date.now() - started;
@@ -319,10 +438,3 @@ class PanAndZoom {
 		return `matrix(${[a, b, c, d, tx, ty].join()})`;
 	}
 }
-
-
-if("object" === typeof module)
-	module.exports = PanAndZoom;
-
-else if("object" === typeof window)
-	Object.assign(window, {PanAndZoom});
