@@ -1,0 +1,14 @@
+{
+	"name": "pan-and-zoom",
+	"version": "v0.0.0",
+	"license": "ISC",
+	"repository": "https://github.com/Alhadis/PanAndZoom",
+	"description": "Low-level interface for calculating pan and zoom transformations.",
+	"keywords": ["pan", "zoom", "affine", "transform", "matrix", "magnify", "math"],
+	"author": "John Gardner <gardnerjohng@gmail.com>",
+	"files": ["pan-and-zoom.*"],
+	"main": "./pan-and-zoom",
+	"scripts": {
+		"prepare": "make"
+	}
+}
