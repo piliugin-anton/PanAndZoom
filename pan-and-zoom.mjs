@@ -4,7 +4,19 @@ const NO_MIN = Number.NEGATIVE_INFINITY;
 const NO_MAX = Number.POSITIVE_INFINITY;
 const clamp  = (n, min, max) => Math.min(Math.max(n, min), max);
 
+
+/**
+ * Controller for asynchronously applying pan and zoom transformations.
+ * @class
+ */
 export default class PanAndZoom {
+
+	/**
+	 * Initialise a new pan/zoom controller.
+	 *
+	 * @param {Object} [args={}] - Initial property values
+	 * @constructor
+	 */
 	constructor(args = {}){
 		if("function" === typeof args)
 			args = {update: args};
@@ -43,6 +55,14 @@ export default class PanAndZoom {
 		};
 
 		Object.defineProperties(this, {
+
+			/**
+			 * 3x3 affine transform matrix composed from the current
+			 * values of the instance's pan and zoom properties.
+			 *
+			 * @property {Number[]} transform
+			 * @readonly
+			 */
 			transform: {
 				get: () => this.mergeMatrices([
 					1, 0, panX,
@@ -66,6 +86,11 @@ export default class PanAndZoom {
 
 			/* Section: Panning */
 
+			/**
+			 * An array containing the values of `panX` and `panY`.
+			 * @property {Number[]} pan
+			 * @default [0,0]
+			 */
 			pan: {
 				get: () => [panX, panY],
 				set: to => {
@@ -82,6 +107,11 @@ export default class PanAndZoom {
 				},
 			},
 
+			/**
+			 * Horizontal pan offset.
+			 * @property {Number} panX
+			 * @default 0
+			 */
 			panX: {
 				get: () => panX,
 				set: to => {
@@ -95,6 +125,11 @@ export default class PanAndZoom {
 				},
 			},
 
+			/**
+			 * Vertical pan offset.
+			 * @property {Number} panY
+			 * @default 0
+			 */
 			panY: {
 				get: () => panY,
 				set: to => {
@@ -108,6 +143,11 @@ export default class PanAndZoom {
 				},
 			},
 			
+			/**
+			 * Minimum horizontal `panX` value.
+			 * @property {Number} minPanX
+			 * @default Number.NEGATIVE_INFINITY
+			 */
 			minPanX: {
 				get: () => minPanX,
 				set: to => {
@@ -117,6 +157,11 @@ export default class PanAndZoom {
 				},
 			},
 			
+			/**
+			 * Minimum possible `panY` value.
+			 * @property {Number} minPanY
+			 * @default Number.NEGATIVE_INFINITY
+			 */
 			minPanY: {
 				get: () => minPanY,
 				set: to => {
@@ -126,6 +171,11 @@ export default class PanAndZoom {
 				},
 			},
 			
+			/**
+			 * Maximum possible `panX` value.
+			 * @property {Number} maxPanX
+			 * @default Number.POSITIVE_INFINITY
+			 */
 			maxPanX: {
 				get: () => maxPanX,
 				set: to => {
@@ -135,6 +185,11 @@ export default class PanAndZoom {
 				},
 			},
 			
+			/**
+			 * Maximum possible `panY` value.
+			 * @property {Number} maxPanY
+			 * @default Number.POSITIVE_INFINITY
+			 */
 			maxPanY: {
 				get: () => maxPanY,
 				set: to => {
@@ -147,6 +202,11 @@ export default class PanAndZoom {
 
 			/* Section: Origin */
 			
+			/**
+			 * An array containing the values of `originX` and `originY`.
+			 * @property {Number[]} origin
+			 * @default [0,0]
+			 */
 			origin: {
 				get: () => [originX, originY],
 				set: to => {
@@ -163,6 +223,11 @@ export default class PanAndZoom {
 				},
 			},
 
+			/**
+			 * Horizontal offset of transformation centre.
+			 * @property {Number} originX
+			 * @default 0
+			 */
 			originX: {
 				get: () => originX,
 				set: to => {
@@ -176,6 +241,11 @@ export default class PanAndZoom {
 				},
 			},
 
+			/**
+			 * Vertical offset of transformation centre.
+			 * @property {Number} originY
+			 * @default 0
+			 */
 			originY: {
 				get: () => originY,
 				set: to => {
@@ -189,6 +259,11 @@ export default class PanAndZoom {
 				},
 			},
 
+			/**
+			 * Minimum possible `originX` value.
+			 * @property {Number} minOriginX
+			 * @default Number.NEGATIVE_INFINITY
+			 */
 			minOriginX: {
 				get: () => minOriginX,
 				set: to => {
@@ -198,6 +273,11 @@ export default class PanAndZoom {
 				},
 			},
 
+			/**
+			 * Minimum possible `originY` value.
+			 * @property {Number} minOriginY
+			 * @default Number.NEGATIVE_INFINITY
+			 */
 			minOriginY: {
 				get: () => minOriginY,
 				set: to => {
@@ -207,6 +287,11 @@ export default class PanAndZoom {
 				},
 			},
 
+			/**
+			 * Maximum possible `originX` value.
+			 * @property {Number} maxOriginX
+			 * @default Number.POSITIVE_INFINITY 
+			 */
 			maxOriginX: {
 				get: () => maxOriginX,
 				set: to => {
@@ -216,6 +301,11 @@ export default class PanAndZoom {
 				},
 			},
 
+			/**
+			 * Maximum possible `originY` value.
+			 * @property {Number} maxOriginY
+			 * @default Number.POSITIVE_INFINITY
+			 */
 			maxOriginY: {
 				get: () => maxOriginY,
 				set: to => {
@@ -228,6 +318,11 @@ export default class PanAndZoom {
 
 			/* Section: Zooming */
 
+			/**
+			 * Magnification amount, expressed as a multiplier.
+			 * @property {Number} zoom
+			 * @default 1.0
+			 */
 			zoom: {
 				get: () => zoom,
 				set: to => {
@@ -241,6 +336,11 @@ export default class PanAndZoom {
 				},
 			},
 			
+			/**
+			 * Minimum possible `zoom` value.
+			 * @property {Number} minZoom
+			 * @default 0
+			 */
 			minZoom: {
 				get: () => minZoom,
 				set: to => {
@@ -250,6 +350,11 @@ export default class PanAndZoom {
 				},
 			},
 
+			/**
+			 * Maximum possible `zoom` value.
+			 * @property {Number} maxZoom
+			 * @default Number.POSITIVE_INFINITY
+			 */
 			maxZoom: {
 				get: () => maxZoom,
 				set: to => {
@@ -262,6 +367,11 @@ export default class PanAndZoom {
 
 			/* Section: Callbacks */
 
+			/**
+			 * Callback to trigger each time a property is modified.
+			 * @property {Function} update
+			 * @default ()=>{}
+			 */
 			update: {
 				get: () => debounced.update || update,
 				set: to => {
@@ -272,6 +382,11 @@ export default class PanAndZoom {
 				},
 			},
 
+			/**
+			 * Callback to trigger each time `originX` or `originY` are modified.
+			 * @property {XYChangeCallback} updateOrigin
+			 * @default ()=>{}
+			 */
 			updateOrigin: {
 				get: () => debounced.updateOrigin || updateOrigin,
 				set: to => {
@@ -282,6 +397,11 @@ export default class PanAndZoom {
 				},
 			},
 
+			/**
+			 * Callback to trigger each time `panX` or `panY` are modified.
+			 * @property {XYChangeCallback} updatePan
+			 * @default ()=>{}
+			 */
 			updatePan: {
 				get: () => debounced.updatePan || updatePan,
 				set: to => {
@@ -292,6 +412,11 @@ export default class PanAndZoom {
 				},
 			},
 
+			/**
+			 * Callback to trigger each time `zoom` is modified.
+			 * @property {NumChangeCallback} updateZoom
+			 * @default ()=>{}
+			 */
 			updateZoom: {
 				get: () => debounced.updateZoom || updateZoom,
 				set: to => {
@@ -302,6 +427,11 @@ export default class PanAndZoom {
 				},
 			},
 
+			/**
+			 * Milliseconds to delay callbacks by when properties change.
+			 * @property {Number} updateDelay
+			 * @default 0
+			 */
 			updateDelay: {
 				get: () => updateDelay,
 				set: to => {
@@ -314,6 +444,12 @@ export default class PanAndZoom {
 				},
 			},
 
+			/**
+			 * Whether to fire callbacks before or after waiting
+			 * for `updateDelay` milliseconds to elapse.
+			 * @property {Boolean} updateEarly
+			 * @default true
+			 */
 			updateEarly: {
 				get: () => updateEarly,
 				set: to => {
@@ -438,3 +574,18 @@ export default class PanAndZoom {
 		return `matrix(${[a, b, c, d, tx, ty].join()})`;
 	}
 }
+
+
+/**
+ * Callbacks triggered when modifying the X and/or Y ordinates of a property.
+ * @callback {XYChangeCallback}
+ * @param {Number[]} from - Array holding the previous X and Y values
+ * @param {Number[]} to   - Array holding the updated X and Y values
+ */ 
+
+/**
+ * Callback triggered when changing the value of a numeric property.
+ * @callback {NumChangeCallback}
+ * @param {Number} from - Former property value
+ * @param {Number} to   - Updated property value
+ */
