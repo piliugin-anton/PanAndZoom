@@ -1,6 +1,6 @@
 {
 	"name": "pan-and-zoom",
-	"version": "v0.0.0",
+	"version": "v1.0.0",
 	"license": "ISC",
 	"repository": "https://github.com/Alhadis/PanAndZoom",
 	"description": "Low-level interface for calculating pan and zoom transformations.",
