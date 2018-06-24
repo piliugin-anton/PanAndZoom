@@ -1,1 +1,2 @@
-/test linguist-documentation
+# Prevent fixtures from skewing language stats on GitHub
+test/* linguist-documentation
