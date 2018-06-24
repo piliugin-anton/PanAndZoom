@@ -46,16 +46,11 @@ which is fired asynchronously. This allows multiple properties to be changed
 with only one invocation fired, reducing overhead and potentially expensive
 DOM transactions.
 
+<!-- TODO: Use a real documentation language instead of Markdown -->
 
-### `transform`
-**Type:** [`Array`][]  
-**Read-only**
+### Panning
 
-A 3x3 affine transform matrix composed from the current values of the
-instance's [`pan`][] and [`zoom`][] properties.
-
-
-### `pan`
+#### `pan`
 **Default:**         `[0, 0]`  
 **Type:**            [`Array`][]  
 **Fires callbacks:** [`updatePan`][], [`update`][]
@@ -63,7 +58,7 @@ instance's [`pan`][] and [`zoom`][] properties.
 An array containing the values of [`panX`][] and [`panY`][].
 
 
-### `panX`
+#### `panX`
 **Default:**         `0`  
 **Type:**            [`Number`][]  
 **Fires callbacks:** [`updatePan`][], [`update`][]
@@ -71,7 +66,7 @@ An array containing the values of [`panX`][] and [`panY`][].
 Horizontal pan offset.
 
 
-### `panY`
+#### `panY`
 **Default:**         `0`  
 **Type:**            [`Number`][]  
 **Fires callbacks:** [`updatePan`][], [`update`][]
@@ -79,35 +74,37 @@ Horizontal pan offset.
 Vertical pan offset.
 
 
-### `minPanX`
+#### `minPanX`
 **Default:**         [`Number.NEGATIVE_INFINITY`][]  
 **Type:**            [`Number`][]
 
 Minimum possible [`panX`][] value.
 
 
-### `minPanY`
+#### `minPanY`
 **Default:**         [`Number.NEGATIVE_INFINITY`][]  
 **Type:**            [`Number`][]
 
 Minimum possible [`panY`][] value.
 
 
-### `maxPanX`
+#### `maxPanX`
 **Default:**         [`Number.POSITIVE_INFINITY`][]  
 **Type:**            [`Number`][]
 
 Maximum possible [`panX`][] value.
 
 
-### `maxPanY`
+#### `maxPanY`
 **Default:**         [`Number.POSITIVE_INFINITY`][]  
 **Type:**            [`Number`][]
 
 Maximum possible [`panY`][] value.
 
 
-### `origin`
+### Transform origin
+
+#### `origin`
 **Default:**         `[0, 0]`  
 **Type:**            [`Array`][]  
 **Fires callbacks:** [`updateOrigin`][], [`update`][]
@@ -115,7 +112,7 @@ Maximum possible [`panY`][] value.
 An array containing the values of [`originX`][] and [`originY`][].
 
 
-### `originX`
+#### `originX`
 **Default:**         `0`  
 **Type:**            [`Number`][]  
 **Fires callbacks:** [`updateOrigin`][], [`update`][]
@@ -123,7 +120,7 @@ An array containing the values of [`originX`][] and [`originY`][].
 Horizontal ordinate of transformation centre.
 
 
-### `originY`
+#### `originY`
 **Default:**         `0`  
 **Type:**            [`Number`][]  
 **Fires callbacks:** [`updateOrigin`][], [`update`][]
@@ -131,35 +128,37 @@ Horizontal ordinate of transformation centre.
 Vertical ordinate of transformation centre.
 
 
-### `minOriginX`
+#### `minOriginX`
 **Default:**        [`Number.NEGATIVE_INFINITY`][]  
 **Type:**           [`Number`][]
 
 Minimum possible [`originX`][] value.
 
 
-### `minOriginY`
+#### `minOriginY`
 **Default:**        [`Number.NEGATIVE_INFINITY`][]  
 **Type:**           [`Number`][]
 
 Minimum possible [`originY`][] value.
 
 
-### `maxOriginX`
+#### `maxOriginX`
 **Default:**        [`Number.POSITIVE_INFINITY`][]  
 **Type:**           [`Number`][]
 
 Maximum possible [`originX`][] value.
 
 
-### `maxOriginY`
+#### `maxOriginY`
 **Default:**        [`Number.POSITIVE_INFINITY`][]  
 **Type:**           [`Number`][]
 
 Maximum possible [`originY`][] value.
 
 
-### `zoom`
+### Zooming
+
+#### `zoom`
 **Default:**         `1.0`  
 **Type:**            [`Number`][]  
 **Fires callbacks:** [`updateZoom`][], [`update`][]
@@ -167,21 +166,23 @@ Maximum possible [`originY`][] value.
 Magnification amount, expressed as a positive multiplier.
 
 
-### `minZoom`
+#### `minZoom`
 **Default:**         `0`  
 **Type:**            [`Number`][]
 
 Minimum possible [`zoom`][] value.
 
 
-### `maxZoom`
+#### `maxZoom`
 **Default:**         [`Number.POSITIVE_INFINITY`][]  
 **Type:**            [`Number`][]
 
 Maximum possible [`zoom`][] value.
 
 
-### `update`
+### Callbacks
+
+#### `update`
 **Default:**         `() => {}` (noop)  
 **Type:**            [`Function`][]  
 **Arguments:**       None
@@ -189,7 +190,7 @@ Maximum possible [`zoom`][] value.
 Callback to trigger each time a property is modified.
 
 
-### `updateOrigin`
+#### `updateOrigin`
 **Default:**         `() => {}` (noop)  
 **Type:**            [`Function`][]  
 **Arguments:**       `[fromX, fromY]`, `[toX, toY]`
@@ -197,7 +198,7 @@ Callback to trigger each time a property is modified.
 Callback to trigger each time [`originX`][] or [`originY`][] are modified.
 
 
-### `updatePan`
+#### `updatePan`
 **Default:**         `() => {}` (noop)  
 **Type:**            [`Function`][]  
 **Arguments:**       `[fromX, fromY]`, `[toX, toY]`
@@ -205,7 +206,7 @@ Callback to trigger each time [`originX`][] or [`originY`][] are modified.
 Callback to trigger each time [`panX`][] or [`panY`][] are modified.
 
 
-### `updateZoom`
+#### `updateZoom`
 **Default:**         `() => {}` (noop)  
 **Type:**            [`Function`][]  
 **Arguments:**       `from`, `to`
@@ -213,7 +214,7 @@ Callback to trigger each time [`panX`][] or [`panY`][] are modified.
 Callback to trigger each time [`zoom`][] is modified.
 
 
-### `updateDelay`
+#### `updateDelay`
 **Default:**         `0`  
 **Type:**            [`Number`][]
 
@@ -221,7 +222,7 @@ Milliseconds to delay callbacks by whenever properties change.
 Used by the class's [`debounce`][] method when throttling callback functions.
 
 
-### `updateEarly`
+#### `updateEarly`
 **Default:**        `true`  
 **Type:**           [`Boolean`][]
 
@@ -229,6 +230,17 @@ Whether to fire callbacks before or after waiting for [`updateDelay`][]
 milliseconds to elapse. This property only makes sense when `updateDelay`
 is assigned a value greater than zero, and when multiple successive updates
 are expected (such as during a click-and-drag operation).
+
+
+### Misc
+
+#### `transform`
+**Type:** [`Array`][]  
+**Read-only**
+
+A 3x3 affine transform matrix composed from the current values of the
+instance's [`pan`][] and [`zoom`][] properties.
+
 
 
 
