@@ -144,7 +144,7 @@ export default class PanAndZoom {
 			},
 			
 			/**
-			 * Minimum horizontal `panX` value.
+			 * Minimum possible `panX` value.
 			 * @property {Number} minPanX
 			 * @default Number.NEGATIVE_INFINITY
 			 */
@@ -494,7 +494,7 @@ export default class PanAndZoom {
 
 
 	/**
-	 * Concatenate two affine transformation matrices.
+	 * Concatenate two or more affine transformation matrices.
 	 *
 	 * @param  {Number[][]} matrices
 	 * @return {Number[]}
