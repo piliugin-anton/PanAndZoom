@@ -459,6 +459,23 @@ export default class PanAndZoom {
 				},
 			},
 		});
+		
+		// Sanitise initial values
+		minPanX    = +minPanX       || 0;
+		minPanY    = +minPanY       || 0;
+		maxPanX    = +maxPanX       || 0;
+		maxPanY    = +maxPanY       || 0;
+		minZoom    = +minZoom       || 0;
+		maxZoom    = +maxZoom       || 0;
+		minOriginX = +minOriginX    || 0;
+		maxOriginX = +maxOriginX    || 0;
+		minOriginY = +minOriginY    || 0;
+		maxOriginY = +maxOriginY    || 0;
+		panX       = clamp(+panX    || 0, minPanX,    maxPanX);
+		panY       = clamp(+panY    || 0, minPanY,    maxPanY);
+		zoom       = clamp(+zoom    || 0, minZoom,    maxZoom);
+		originX    = clamp(+originX || 0, minOriginX, maxOriginX);
+		originY    = clamp(+originY || 0, minOriginY, maxOriginY);
 
 		// Force regeneration of debounced callbacks
 		const redebounce = () => {
