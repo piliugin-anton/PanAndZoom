@@ -1,0 +1,28 @@
+*{
+	box-sizing: border-box;
+	tab-size: 4;
+}
+html, body{
+	margin: 0;
+	padding: 0;
+	background: #ccc;
+	width: 100vw;
+}
+#map{
+	touch-action: none;
+	overflow: hidden;
+	width: 32em;
+	margin: 1em;
+	background: #900;
+	box-shadow: .1em .1em .35em rgba(0,0,0,.45);
+	border: 1px solid #444;
+}
+	#map > img{
+		width: 100%;
+		display: block;
+		transform: translate(0, 0);
+		transform-origin: 0 0;
+	}
+	#viewer.zooming > img{
+		transition: .3s ease transform;
+	}

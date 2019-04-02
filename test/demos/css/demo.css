@@ -1,0 +1,49 @@
+*{
+	box-sizing: border-box;
+	tab-size: 4;
+}
+html, body{
+	margin: 0;
+	padding: 0;
+}
+#controls{
+	position: fixed;
+	bottom: 0;
+	left:   0;
+	right:  0;
+	background: rgba(255, 255, 255, 0.8);
+	z-index: 3;
+}
+label{
+	display: block;
+}
+#a, #b{
+	position: absolute;
+	transition: .3s ease all;
+	transform-origin: 0 0;
+	font-size: 100px;
+	width:  1em;
+	height: 1em;
+	z-index: 1;
+}
+#a{
+	background: rgba(255, 0, 0, 0.25);
+	outline: 1px solid rgba(255, 0, 0, 0.75);
+}
+#b{
+	background: rgba(0, 0, 255, 0.25);
+	outline: 1px solid rgba(0, 0, 255, 0.75);
+}
+.v{
+	position: absolute;
+	width:  1em;
+	height: 1em;
+	top:    0;
+	left:   0;
+	margin: -.5em 0 0 -.5em;
+	background: #0a0;
+	box-shadow: inset 0 0 1em #000;
+	transition: .3s ease all;
+	border-radius: 50%;
+	z-index: 2;
+}
