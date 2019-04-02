@@ -13,11 +13,19 @@ $(ENTRY).js: $(ENTRY).mjs
 		--name $(UMD_NAME) \
 		--input $(ENTRY).mjs \
 		--file $@
+	npx eslint \
+		--global define \
+		--no-ignore \
+		--rule "multiline-ternary: 0" \
+		--rule "indent: 0" \
+		--fix $@
+	sed -i.bak -e 's/^ *\("use strict";\)/	\1/' $@
+	rm -f $@.bak
 
 
 # Wipe generated build targets
 clean:
-	rm -f *.js
+	rm -f $(ENTRY).js
 
 .PHONY: clean
 
