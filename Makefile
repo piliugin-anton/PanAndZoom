@@ -1,7 +1,7 @@
 ENTRY = pan-and-zoom
 UMD_NAME = PanAndZoom
 
-all: lint umd
+all: lint umd test
 
 # Convert ESM source to UMD
 umd: $(ENTRY).js
@@ -35,3 +35,10 @@ lint:
 	npx eslint --ext mjs,js .
 
 .PHONY: lint
+
+
+# Run unit-tests
+test: umd
+	npx mocha
+
+.PHONY: test

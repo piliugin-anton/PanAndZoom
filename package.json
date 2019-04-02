@@ -10,12 +10,16 @@
 	"main": "./pan-and-zoom",
 	"scripts": {
 		"lint":    "make lint",
+		"test":    "make test",
 		"prepare": "make"
 	},
 	"devDependencies": {
 		"@alhadis/eslint-config": "^1.2.0",
-		"eslint": "^5.16.0",
-		"rollup": "^1.7.4"
+		"chai":       "^4.2.0",
+		"eslint":     "^5.16.0",
+		"mocha":      "^6.0.2",
+		"mocha-when": "^1.0.0",
+		"rollup":     "^1.7.4"
 	},
 	"eslintIgnore": ["pan-and-zoom.js"],
 	"eslintConfig": {
@@ -23,6 +27,10 @@
 		"rules": {
 			"consistent-this": 0,
 			"prefer-rest-params": 0
-		}
+		},
+		"overrides": [{
+			"files": ["test/*"],
+			"globals": {"expect": true}
+		}]
 	}
 }
