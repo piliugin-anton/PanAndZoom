@@ -1,5 +1,3 @@
-"use strict";
-
 const NO_MIN = Number.NEGATIVE_INFINITY;
 const NO_MAX = Number.POSITIVE_INFINITY;
 const clamp  = (n, min, max) => Math.min(Math.max(n, min), max);

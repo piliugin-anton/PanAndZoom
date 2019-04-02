@@ -10,5 +10,8 @@
 	"main": "./pan-and-zoom",
 	"scripts": {
 		"prepare": "make"
+	},
+	"devDependencies": {
+		"rollup": "^1.7.4"
 	}
 }
