@@ -66,15 +66,15 @@ export default class PanAndZoom {
 					1, 0, panX,
 					0, 1, panY,
 					0, 0, 1,
-				],[
+				], [
 					1, 0, originX,
 					0, 1, originY,
 					0, 0, 1,
-				],[
+				], [
 					zoom, 0,    0,
 					0,    zoom, 0,
 					0,    0,    1,
-				],[
+				], [
 					1, 0, -originX,
 					0, 1, -originY,
 					0, 0, 1,
@@ -498,7 +498,11 @@ export default class PanAndZoom {
 	 * @return {Number[]}
 	 */
 	mergeMatrices(...matrices){
-		let result = matrices[0] || [1,0,0,0,1,0,0,0,1];
+		let result = matrices[0] || [
+			1, 0, 0,
+			0, 1, 0,
+			0, 0, 1,
+		];
 
 		if(matrices.length < 2)
 			return result;
@@ -539,7 +543,7 @@ export default class PanAndZoom {
 		if(limit < 0)
 			return fn;
 		let started, context, args, timing;
-		const delayed = function(){
+		function delayed(){
 			const timeSince = Date.now() - started;
 			if(timeSince >= limit){
 				if(!asap) fn.apply(context, args);
@@ -547,7 +551,7 @@ export default class PanAndZoom {
 				timing = context = args = null;
 			}
 			else timing = setTimeout(delayed, limit - timeSince);
-		};
+		}
 		return function(){
 			context = this,
 			args    = arguments;

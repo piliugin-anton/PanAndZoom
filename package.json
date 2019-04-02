@@ -9,9 +9,20 @@
 	"files": ["pan-and-zoom.*"],
 	"main": "./pan-and-zoom",
 	"scripts": {
+		"lint":    "make lint",
 		"prepare": "make"
 	},
 	"devDependencies": {
+		"@alhadis/eslint-config": "^1.2.0",
+		"eslint": "^5.16.0",
 		"rollup": "^1.7.4"
+	},
+	"eslintIgnore": ["pan-and-zoom.js"],
+	"eslintConfig": {
+		"extends": "@alhadis",
+		"rules": {
+			"consistent-this": 0,
+			"prefer-rest-params": 0
+		}
 	}
 }
