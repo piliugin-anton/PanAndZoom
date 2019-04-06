@@ -16,4 +16,4 @@ package-lock.json
 
 # Project-specific
 /pan-and-zoom.js
-/test.js
+/test.[jt]s

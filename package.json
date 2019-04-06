@@ -8,6 +8,7 @@
 	"author": "John Gardner <gardnerjohng@gmail.com>",
 	"files": ["pan-and-zoom.*"],
 	"main": "./pan-and-zoom",
+	"types": "./pan-and-zoom.d.ts",
 	"scripts": {
 		"lint":    "make lint",
 		"test":    "make test",
