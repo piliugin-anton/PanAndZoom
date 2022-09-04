@@ -435,8 +435,8 @@ describe("PanAndZoom", () => {
 				paz.originY    = {} as any;        expect(paz.originY).to.be.a("number").that.equals(0);
 				paz.minOriginX = undefined as any; expect(paz.minOriginX).to.be.a("number").that.equals(0);
 				paz.minOriginY = null as any;      expect(paz.minOriginY).to.be.a("number").that.equals(0);
-				paz.maxOriginX = "Nope";    	   expect(paz.maxOriginX).to.be.a("number").that.equals(0);
-				paz.maxOriginY = NaN;       	   expect(paz.maxOriginY).to.be.a("number").that.equals(0);
+				paz.maxOriginX = "Nope";           expect(paz.maxOriginX).to.be.a("number").that.equals(0);
+				paz.maxOriginY = NaN;              expect(paz.maxOriginY).to.be.a("number").that.equals(0);
 			});
 		});
 
