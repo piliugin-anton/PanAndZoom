@@ -8,11 +8,11 @@ module.exports = {
   },
   overrides: [
     {
-      "files": [
+      files: [
         "test/*"
       ],
-      "globals": {
-        "expect": true
+      globals: {
+        expect: true
       }
     }
   ]
