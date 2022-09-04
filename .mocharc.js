@@ -1,8 +1,9 @@
 "use strict";
 
 module.exports = {
+	spec: "test/**/*.spec.ts",
 	require: [
-		"chai/register-expect",
-		"mocha-when/register",
-	],
+		"ts-node/register",
+		"chai/register-expect.js"
+	]
 };

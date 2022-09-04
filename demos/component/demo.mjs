@@ -1,4 +1,4 @@
-import PanAndZoom from "../../../pan-and-zoom.mjs";
+import { PanAndZoom } from "pan-and-zoom";
 
 const a = document.getElementById("a");
 const b = document.getElementById("b");

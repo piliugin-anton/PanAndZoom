@@ -23,14 +23,35 @@ npm install --save pan-and-zoom
 In your project's JavaScript:
 
 ~~~js
-import PanAndZoom from "pan-and-zoom";
+import { PanAndZoom } from "pan-and-zoom";
 
-let paz = new PanAndZoom({
+const paz = new PanAndZoom({
 
 	// Callback fired after changing a `PanAndZoom' object's properties
 	update(){
 		const el = document.getElementById("some-huge-thing");
 		el.style.transform = paz; // Calls paz.toString() implicitly
+
+		// Or for canvas:
+		const canvas = document.getElementById("canvas");
+		const canvasRenderContext2D = canvas.getContext("2d");
+		canvasRenderContext2D.setTransform(...paz);
+	},
+});
+
+paz.zoom = 1.5; // +150% scale
+paz.panX = 300; // Move horizontally 300 units
+~~~
+
+Or in Node.js:
+
+~~~js
+const { PanAndZoom } = require("pan-and-zoom");
+
+const paz = new PanAndZoom({
+	update(){
+		console.log(`CSS transform: ${paz}`);
+		console.log('Canvas transformation matrix:', ...paz);
 	},
 });
 
@@ -310,7 +331,6 @@ paz.mergeMatrices(
 	0, 0, 1,
 ];
 ~~~
-
 
 <a name="debounce"></a>
 ### `debounce(fn)`

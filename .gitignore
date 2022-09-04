@@ -17,3 +17,7 @@ package-lock.json
 # Project-specific
 /pan-and-zoom.js
 /test.[jt]s
+
+# Builds
+dist
+pan-and-zoom-*.tgz

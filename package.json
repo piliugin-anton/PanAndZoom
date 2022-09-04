@@ -1,37 +1,58 @@
 {
 	"name": "pan-and-zoom",
-	"version": "v1.0.0",
+	"version": "v1.0.1",
 	"license": "ISC",
 	"repository": "https://github.com/Alhadis/PanAndZoom",
 	"description": "Low-level interface for calculating pan and zoom transformations.",
-	"keywords": ["pan", "zoom", "affine", "transform", "matrix", "magnify", "math"],
+	"keywords": [
+		"pan",
+		"zoom",
+		"affine",
+		"transform",
+		"matrix",
+		"magnify",
+		"math"
+	],
 	"author": "John Gardner <gardnerjohng@gmail.com>",
-	"files": ["pan-and-zoom.*"],
-	"main": "./pan-and-zoom",
-	"types": "./pan-and-zoom.d.ts",
+	"files": [
+		"dist"
+	],
+	"main": "dist/cjs/index.js",
+	"module": "dist/esm/index.js",
+	"browser": "dist/umd/index.js",
+	"types": "dist/types/index.d.ts",
+	"exports": {
+		".": {
+			"import": "./dist/esm/index.js",
+			"require": "./dist/cjs/index.js"
+		}
+	},
+	"publishConfig": {
+		"access": "public"
+	},
 	"scripts": {
-		"lint":    "make lint",
-		"test":    "make test",
-		"prepare": "make"
+		"lint": "eslint --ext .ts ./src/",
+		"test": "mocha",
+		"clean": "node tools/cleanup",
+		"build": "npm run build:cjs && npm run build:esm && npm run build:umd && npm run build:types",
+		"build:cjs": "node tools/cleanup cjs && tsc -p config/tsconfig.cjs.json",
+		"build:esm": "node tools/cleanup esm && tsc -p config/tsconfig.esm.json",
+		"build:umd": "node tools/cleanup umd && webpack --config config/webpack.config.js",
+		"build:types": "node tools/cleanup types && tsc -p config/tsconfig.types.json",
+		"package": "npm run build && npm pack"
 	},
 	"devDependencies": {
-		"@alhadis/eslint-config": "^1.2.0",
-		"chai":       "^4.2.0",
-		"eslint":     "^5.16.0",
-		"mocha":      "^6.0.2",
-		"mocha-when": "^1.0.0",
-		"rollup":     "^1.7.4"
-	},
-	"eslintIgnore": ["pan-and-zoom.js"],
-	"eslintConfig": {
-		"extends": "@alhadis",
-		"rules": {
-			"consistent-this": 0,
-			"prefer-rest-params": 0
-		},
-		"overrides": [{
-			"files": ["test/*"],
-			"globals": {"expect": true}
-		}]
+		"@types/chai": "^4.3.3",
+		"@types/mocha": "^9.1.1",
+		"@typescript-eslint/eslint-plugin": "^5.36.1",
+		"@typescript-eslint/parser": "^5.36.1",
+		"chai": "^4.2.0",
+		"eslint": "^8.23.0",
+		"mocha": "^10.0.0",
+		"ts-loader": "^9.3.1",
+		"ts-node": "^10.9.1",
+		"typescript": "^4.8.2",
+		"webpack": "^5.74.0",
+		"webpack-cli": "^4.10.0"
 	}
 }

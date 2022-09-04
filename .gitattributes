@@ -1,2 +1,5 @@
 # Prevent fixtures from skewing language stats on GitHub
-test/demos/* linguist-documentation
+demos/* linguist-documentation
+
+# TSConfig files comments fix
+config/*.json linguist-language=JSONC
