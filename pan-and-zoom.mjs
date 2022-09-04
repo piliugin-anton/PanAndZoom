@@ -610,7 +610,7 @@ export default class PanAndZoom {
  * @callback {XYChangeCallback}
  * @param {Number[]} from - Array holding the previous X and Y values
  * @param {Number[]} to   - Array holding the updated X and Y values
- */ 
+ */
 
 /**
  * Callback triggered when changing the value of a numeric property.
