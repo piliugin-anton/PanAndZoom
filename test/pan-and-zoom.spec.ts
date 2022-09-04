@@ -294,7 +294,7 @@ describe("PanAndZoom", () => {
 			});
 			paz.zoom    = [] as any;    expect(paz.zoom).to.be.a("number").that.equals(0);
 			paz.minZoom = {} as any;    expect(paz.minZoom).to.be.a("number").that.equals(0);
-			paz.maxZoom = "Invalid"; 	expect(paz.maxZoom).to.be.a("number").that.equals(0);
+			paz.maxZoom = "Invalid";    expect(paz.maxZoom).to.be.a("number").that.equals(0);
 		});
 		
 		it("truncates out-of-range values when correcting invalid values", () => {
