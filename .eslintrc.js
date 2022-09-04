@@ -1,5 +1,5 @@
 module.exports = {
-  extends: ['@alhadis/eslint-config'],
+  extends: '@Alhadis',
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint'],
   rules: {
