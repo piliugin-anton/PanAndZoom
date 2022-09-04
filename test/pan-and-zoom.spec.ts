@@ -126,8 +126,8 @@ describe("PanAndZoom", () => {
 				paz.panY    = {} as any;        expect(paz.panY).to.be.a("number").that.equals(0);
 				paz.minPanX = undefined as any; expect(paz.minPanX).to.be.a("number").that.equals(0);
 				paz.minPanY = null as any;      expect(paz.minPanY).to.be.a("number").that.equals(0);
-				paz.maxPanX = "Nope";    		expect(paz.maxPanX).to.be.a("number").that.equals(0);
-				paz.maxPanY = NaN;       		expect(paz.maxPanY).to.be.a("number").that.equals(0);
+				paz.maxPanX = "Nope";           expect(paz.maxPanX).to.be.a("number").that.equals(0);
+				paz.maxPanY = NaN;              expect(paz.maxPanY).to.be.a("number").that.equals(0);
 			});
 		});
 		
