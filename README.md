@@ -31,6 +31,11 @@ const paz = new PanAndZoom({
 	update(){
 		const el = document.getElementById("some-huge-thing");
 		el.style.transform = paz; // Calls paz.toString() implicitly
+
+		// Or for canvas:
+		const canvas = document.getElementById("canvas");
+		const canvasRenderContext2D = canvas.getContext("2d");
+		canvasRenderContext2D.setTransform(...paz);
 	},
 });
 
@@ -45,7 +50,8 @@ const { PanAndZoom } = require("pan-and-zoom");
 
 const paz = new PanAndZoom({
 	update(){
-		console.log(paz.toCanvasMatrix())
+		console.log(`CSS transform: ${paz}`);
+		console.log('Canvas transformation matrix:', ...paz);
 	},
 });
 
@@ -325,19 +331,6 @@ paz.mergeMatrices(
 	0, 0, 1,
 ];
 ~~~
-
-<a name="tocanvasmatrix"></a>
-### `toCanvasMatrix()`
-Get canvas compatible transformation matrix (https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setTransform)
-
-Returns numeric array with 6 elements.
-
-__Example:__
-~~~js
-const canvasRenderingContext2D = canvas.getContext("2d");
-canvasRenderingContext2D.setTransfrom(...paz.toCanvasMatrix());
-~~~
-
 
 <a name="debounce"></a>
 ### `debounce(fn)`
