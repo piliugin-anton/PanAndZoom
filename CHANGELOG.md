@@ -3,17 +3,16 @@ Change Log
 
 This project honours [Semantic Versioning](http://semver.org/).
 
-[Unpublished]: ../../compare/v1.0.1...HEAD
+[Unpublished]: ../../compare/v1.0.0...HEAD
 
 
-[v1.0.1]
+[Unpublished]
 ------------------------------------------------------------------------
-**September 5th, 2022**
+* **Added:** [`Symbol.iterator`] method for simpler conversion to arrays
 * **Fixed:** Breakage when loading non-ESM version in browsers
 * **Fixed:** Values not clamped or typecast if set during initialisation
 
-[v1.0.1]: https://github.com/Alhadis/PanAndZoom/releases/tag/v1.0.1
-
+[`Symbol.iterator`]: https://mdn.io/JS/Symbol.iterator
 
 
 [v1.0.0]
