@@ -7,10 +7,10 @@ This project honours [Semantic Versioning](http://semver.org/).
 
 
 [v1.0.1]
- ------------------------------------------------------------------------
+------------------------------------------------------------------------
 **September 5th, 2022**
- * **Fixed:** Breakage when loading non-ESM version in browsers
- * **Fixed:** Values not clamped or typecast if set during initialisation
+* **Fixed:** Breakage when loading non-ESM version in browsers
+* **Fixed:** Values not clamped or typecast if set during initialisation
 
 [v1.0.1]: https://github.com/Alhadis/PanAndZoom/releases/tag/v1.0.1
 
