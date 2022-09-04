@@ -8,9 +8,11 @@ This project honours [Semantic Versioning](http://semver.org/).
 
 [Unpublished]
 ------------------------------------------------------------------------
+* **Added:** [`Symbol.iterator`] method for simpler conversion to arrays
 * **Fixed:** Breakage when loading non-ESM version in browsers
 * **Fixed:** Values not clamped or typecast if set during initialisation
 
+[`Symbol.iterator`]: https://mdn.io/JS/Symbol.iterator
 
 
 [v1.0.0]

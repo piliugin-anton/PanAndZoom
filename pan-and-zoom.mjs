@@ -584,13 +584,23 @@ export default class PanAndZoom {
 
 
 	/**
+	 * Iterate through a CSS/canvas-compatible subset of the current transform matrix.
+	 * @example context.setTransform(...panAndZoom);
+	 * @return {Number[6]}
+	 */
+	*[Symbol.iterator](){
+		const [a, c, tx, b, d, ty] = this.transform;
+		yield *[a, c, tx, b, d, ty];
+	}
+
+
+	/**
 	 * Generate a CSS-compatible rendition of the current transform matrix.
 	 * @example el.style.transform = panAndZoom;
 	 * @return {String}
 	 */
 	toString(){
-		const [a, c, tx, b, d, ty] = this.transform;
-		return `matrix(${[a, b, c, d, tx, ty].join()})`;
+		return `matrix(${[...this].join()})`;
 	}
 }
 
