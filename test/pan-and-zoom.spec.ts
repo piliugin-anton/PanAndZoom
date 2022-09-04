@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import { PanAndZoom } from "../src/";
 
 describe("PanAndZoom", () => {
