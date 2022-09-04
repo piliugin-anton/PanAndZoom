@@ -590,7 +590,7 @@ export default class PanAndZoom {
 	 */
 	*[Symbol.iterator](){
 		const [a, c, tx, b, d, ty] = this.transform;
-		yield *[a, c, tx, b, d, ty];
+		yield *[a, b, c, d, tx, ty];
 	}
 
 
