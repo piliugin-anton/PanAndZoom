@@ -48,7 +48,7 @@ export type Matrix = [
  * Controller for asynchronously applying pan and zoom transformations.
  * @class
  */
-export class PanAndZoom {
+export class PanAndZoom implements Iterable<number> {
 	private _panX: number;
 	private _panY: number;
 	private _minPanX: number;
@@ -233,6 +233,16 @@ export class PanAndZoom {
 				0, 0, 1,
 			]
 		);
+	}
+
+	/**
+	 * Iterate through a CSS/canvas-compatible subset of the current transform matrix.
+	 * @example context.setTransform(...panAndZoom);
+	 * @return {Number[6]}
+	 */
+	*[Symbol.iterator](): IterableIterator<number> {
+		const [a, c, tx, b, d, ty] = this.transform;
+		yield *[a, b, c, d, tx, ty];
 	}
 
 	get pan(): [number, number] {
@@ -674,15 +684,7 @@ export class PanAndZoom {
 	 * @return {String}
 	 */
 	toString(): string {
-		const [a, c, tx, b, d, ty] = this.transform;
-
-		return `matrix(${[a, b, c, d, tx, ty].join()})`;
-	}
-
-	toCanvasMatrix(): [number, number, number, number, number, number] {
-		const [a, c, tx, b, d, ty] = this.transform;
-
-		return [a, b, c, d, tx, ty];
+		return `matrix(${[...this].join()})`;
 	}
 
 	private clamp(n: number, min: number, max: number): number {
