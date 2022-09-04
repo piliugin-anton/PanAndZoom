@@ -19,3 +19,12 @@ This project honours [Semantic Versioning](http://semver.org/).
 Initial release of pan-and-zoom component.
 
 [v1.0.0]: https://github.com/Alhadis/PanAndZoom/releases/tag/v1.0.0
+
+
+
+[v1.0.1]
+------------------------------------------------------------------------
+**August 31th, 2022**  
+Rewritten to TypeScript. Contributed by [Anton Piliugin](https://github.com/piliugin-anton)
+
+[v1.0.1]: https://github.com/Alhadis/PanAndZoom/releases/tag/v1.0.1

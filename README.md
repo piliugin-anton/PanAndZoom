@@ -23,14 +23,29 @@ npm install --save pan-and-zoom
 In your project's JavaScript:
 
 ~~~js
-import PanAndZoom from "pan-and-zoom";
+import { PanAndZoom } from "pan-and-zoom";
 
-let paz = new PanAndZoom({
+const paz = new PanAndZoom({
 
 	// Callback fired after changing a `PanAndZoom' object's properties
 	update(){
 		const el = document.getElementById("some-huge-thing");
 		el.style.transform = paz; // Calls paz.toString() implicitly
+	},
+});
+
+paz.zoom = 1.5; // +150% scale
+paz.panX = 300; // Move horizontally 300 units
+~~~
+
+Or in Node.js:
+
+~~~js
+const { PanAndZoom } = require("pan-and-zoom");
+
+const paz = new PanAndZoom({
+	update(){
+		console.log(paz.toCanvasMatrix())
 	},
 });
 
@@ -309,6 +324,18 @@ paz.mergeMatrices(
 	0, 2, 400,
 	0, 0, 1,
 ];
+~~~
+
+<a name="tocanvasmatrix"></a>
+### `toCanvasMatrix()`
+Get canvas compatible transformation matrix (https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setTransform)
+
+Returns numeric array with 6 elements.
+
+__Example:__
+~~~js
+const canvasRenderingContext2D = canvas.getContext("2d");
+canvasRenderingContext2D.setTransfrom(...paz.toCanvasMatrix());
 ~~~
 
 
