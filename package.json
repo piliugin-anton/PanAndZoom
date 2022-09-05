@@ -27,9 +27,12 @@
 		"math"
 	],
 	"author": "John Gardner <gardnerjohng@gmail.com>",
+<<<<<<< HEAD
 	"maintainers": [
 		"Anton Piliugin <anton.piliugin@icloud.com>"
 	],
+=======
+>>>>>>> b4ee2eb3badb2271a458116e2b155fb08ef603dc
 	"files": [
 		"dist"
 	],
@@ -43,6 +46,12 @@
 			"require": "./dist/cjs/index.js"
 		}
 	},
+<<<<<<< HEAD
+=======
+	"publishConfig": {
+		"access": "public"
+	},
+>>>>>>> b4ee2eb3badb2271a458116e2b155fb08ef603dc
 	"scripts": {
 		"lint": "eslint --ext .ts ./src/",
 		"test": "mocha",
