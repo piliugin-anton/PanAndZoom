@@ -2,7 +2,20 @@
 	"name": "pan-and-zoom",
 	"version": "v1.0.1",
 	"license": "ISC",
-	"repository": "https://github.com/Alhadis/PanAndZoom",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/piliugin-anton/PanAndZoom.git"
+	},
+	"bugs": {
+		"url": "https://github.com/piliugin-anton/PanAndZoom/issues"
+	},
+	"publishConfig": {
+		"access": "public",
+		"branches": [
+			"master"
+		]
+	},
+	"homepage": "https://github.com/piliugin-anton/PanAndZoom",
 	"description": "Low-level interface for calculating pan and zoom transformations.",
 	"keywords": [
 		"pan",
@@ -14,6 +27,9 @@
 		"math"
 	],
 	"author": "John Gardner <gardnerjohng@gmail.com>",
+	"maintainers": [
+		"Anton Piliugin <anton.piliugin@icloud.com>"
+	],
 	"files": [
 		"dist"
 	],
@@ -26,9 +42,6 @@
 			"import": "./dist/esm/index.js",
 			"require": "./dist/cjs/index.js"
 		}
-	},
-	"publishConfig": {
-		"access": "public"
 	},
 	"scripts": {
 		"lint": "eslint --ext .ts ./src/",
