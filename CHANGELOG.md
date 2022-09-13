@@ -8,6 +8,8 @@ This project honours [Semantic Versioning](http://semver.org/).
 
 [Unpublished]
 ------------------------------------------------------------------------
+#### Breaking changes! Starting from version 2.0.0 only number values are accepted
+
 * **Added:** [`Symbol.iterator`] method for simpler conversion to arrays
 * **Fixed:** Breakage when loading non-ESM version in browsers
 * **Fixed:** Values not clamped or typecast if set during initialisation

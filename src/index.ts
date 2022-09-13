@@ -1,35 +1,39 @@
 export interface IPanAndZoom {
-	panX?: number | string;
-	panY?: number | string;
-	minPanX?: number | string;
-	minPanY?: number | string;
-	maxPanX?: number | string;
-	maxPanY?: number | string;
+	panX?: number;
+	panY?: number;
+	minPanX?: number;
+	minPanY?: number;
+	maxPanX?: number;
+	maxPanY?: number;
 
-	zoom?: number | string;
-	minZoom?: number | string;
-	maxZoom?: number | string;
+	zoom?: number;
+	minZoom?: number;
+	maxZoom?: number;
 
-	originX?: number | string;
-	originY?: number | string;
-	minOriginX?: number | string;
-	minOriginY?: number | string;
-	maxOriginX?: number | string;
-	maxOriginY?: number | string;
+	originX?: number;
+	originY?: number;
+	minOriginX?: number;
+	minOriginY?: number;
+	maxOriginX?: number;
+	maxOriginY?: number;
 
-	update?: Function;
-	updatePan?: Function;
-	updateZoom?: Function;
-	updateOrigin?: Function;
+	update?: UpdateEmptyFunction;
+	updatePan?: UpdateTupleFunction;
+	updateZoom?: UpdateSingleFunction;
+	updateOrigin?: UpdateTupleFunction;
 	updateDelay?: number;
 	updateEarly?: boolean;
 }
 
+export type UpdateEmptyFunction = () => void;
+export type UpdateSingleFunction = (from: number, to: number) => void;
+export type UpdateTupleFunction = (from: [number, number], to: [number, number]) => void;
+
 export interface IDebounced {
-	update: Function | null;
-	updatePan: Function | null;
-	updateZoom: Function | null;
-	updateOrigin: Function | null;
+	update: UpdateEmptyFunction | null;
+	updatePan: UpdateTupleFunction | null;
+	updateZoom: UpdateSingleFunction | null;
+	updateOrigin: UpdateTupleFunction | null;
 }
 
 export type Matrix = [
@@ -66,10 +70,10 @@ export class PanAndZoom implements Iterable<number> {
 	private _maxOriginY: number;
 	private _updateDelay: number;
 	private _updateEarly: boolean;
-	private _update: Function;
-	private _updatePan: Function;
-	private _updateZoom: Function;
-	private _updateOrigin: Function;
+	private _update: UpdateEmptyFunction;
+	private _updatePan: UpdateTupleFunction;
+	private _updateZoom: UpdateSingleFunction;
+	private _updateOrigin: UpdateTupleFunction;
 
 	private debounced: IDebounced = {
 		update: null,
@@ -84,13 +88,13 @@ export class PanAndZoom implements Iterable<number> {
 	/**
 	 * Initialise a new pan/zoom controller.
 	 *
-	 * @param {IPanAndZoom | Function} [args={}] - Initial property values
+	 * @param {IPanAndZoom | UpdateEmptyFunction} [args={}] - Initial property values
 	 * @constructor
 	 */
-	constructor(args: IPanAndZoom | Function = {}) {
-		if("function" === typeof args) args = { update: args };
+	constructor(args: IPanAndZoom | UpdateEmptyFunction = {}) {
+		if (typeof args === 'function') args = { update: args };
 
-		let {
+		const {
 			panX = 0,
 			panY = 0,
 			minPanX = this.NO_MIN,
@@ -109,96 +113,65 @@ export class PanAndZoom implements Iterable<number> {
 			maxOriginX = this.NO_MAX,
 			maxOriginY = this.NO_MAX,
 
+			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			update = () => {},
+			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			updatePan = () => {},
+			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			updateZoom = () => {},
+			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			updateOrigin = () => {},
 			updateDelay = 0,
 			updateEarly = true,
 		} = args;
 
-		minPanX = +minPanX;
-		this._minPanX = Number.isNaN(minPanX) ? this.NO_MIN : minPanX;
+		this._minPanX = typeof minPanX !== 'number' ? this.NO_MIN : minPanX;
+		this._minPanY = typeof minPanY !== 'number' ? this.NO_MIN : minPanY;
+		this._maxPanX = typeof maxPanX !== 'number' ? this.NO_MAX : maxPanX;
+		this._maxPanY = typeof maxPanY !== 'number' ? this.NO_MAX : maxPanY;
+		this._minZoom = typeof minZoom !== 'number' ? 0 : minZoom;
+		this._maxZoom = typeof maxZoom !== 'number' ? this.NO_MAX : maxZoom;
+		this._minOriginX = typeof minOriginX !== 'number' ? this.NO_MIN : minOriginX;
+		this._minOriginY = typeof minOriginY !== 'number' ? this.NO_MIN : minOriginY;
+		this._maxOriginX = typeof maxOriginX !== 'number' ? this.NO_MAX : maxOriginX;
+		this._maxOriginY = typeof maxOriginY !== 'number' ? this.NO_MAX : maxOriginY;
 
-		minPanY = +minPanY;
-		this._minPanY = Number.isNaN(minPanY) ? this.NO_MIN : minPanY;
-
-		maxPanX = +maxPanX;
-		this._maxPanX = Number.isNaN(maxPanX) ? this.NO_MAX : maxPanX;
-
-		maxPanY = +maxPanY;
-		this._maxPanY = Number.isNaN(maxPanY) ? this.NO_MAX : maxPanY;
-
-
-		minZoom = +minZoom;
-		this._minZoom = Number.isNaN(minZoom) ? 0 : minZoom;
-
-		maxZoom = +maxZoom;
-		this._maxZoom = Number.isNaN(maxZoom) ? this.NO_MAX : maxZoom;
-
-		minOriginX = +minOriginX;
-		this._minOriginX = Number.isNaN(minOriginX) ? this.NO_MIN : minOriginX;
-
-		minOriginY = +minOriginY;
-		this._minOriginY = Number.isNaN(minOriginY) ? this.NO_MIN : minOriginY;
-
-		maxOriginX = +maxOriginX;
-		this._maxOriginX = Number.isNaN(maxOriginX) ? this.NO_MAX : maxOriginX;
-
-		maxOriginY = +maxOriginY;
-		this._maxOriginY = Number.isNaN(maxOriginY) ? this.NO_MAX : maxOriginY;
-
-		panX = +panX;
 		this._panX = this.clamp(
-			Number.isFinite(panX) ? panX : 0,
+			typeof panX !== 'number' || !Number.isFinite(panX) ? 0 : panX,
 			this._minPanX,
 			this._maxPanX
 		);
-
-		panY = +panY;
 		this._panY = this.clamp(
-			Number.isFinite(panY) ? panY : 0,
+			typeof panY !== 'number' || !Number.isFinite(panY) ? 0 : panY,
 			this._minPanY,
 			this._maxPanY
 		);
-
-		zoom = +zoom;
 		this._zoom = this.clamp(
-			Number.isFinite(zoom) ? zoom : 1,
+			typeof zoom !== 'number' || !Number.isFinite(zoom) ? 1 : zoom,
 			this._minZoom,
 			this._maxZoom
 		);
-
-		originX = +originX;
 		this._originX = this.clamp(
-			Number.isFinite(originX) ? originX : 0,
+			typeof originX !== 'number' || !Number.isFinite(originX) ? 0 : originX,
 			this._minOriginX,
 			this._maxOriginX
 		);
-
-		originY = +originY;
 		this._originY = this.clamp(
-			Number.isFinite(originY) ? originY : 0,
+			typeof originY !== 'number' || !Number.isFinite(originY) ? 0 : originY,
 			this._minOriginY,
 			this._maxOriginY
 		);
 
-		this._update = "function" === typeof update ? update : () => {};
-
-		this._updatePan =
-			"function" === typeof updatePan ? updatePan : () => {};
-
-		this._updateZoom =
-			"function" === typeof updateZoom ? updateZoom : () => {};
-
-		this._updateOrigin =
-			"function" === typeof updateOrigin ? updateOrigin : () => {};
-
-		updateDelay = +updateDelay;
-		this._updateDelay = Number.isInteger(updateDelay) && updateDelay > 0 ? updateDelay : 0;
-
-		this._updateEarly =
-			"boolean" === typeof updateEarly ? updateEarly : true;
+		// eslint-disable-next-line @typescript-eslint/no-empty-function
+		this._update = typeof update === 'function' ? update : () => {};
+		// eslint-disable-next-line @typescript-eslint/no-empty-function
+		this._updatePan = typeof updatePan === 'function' ? updatePan : () => {};
+		// eslint-disable-next-line @typescript-eslint/no-empty-function
+		this._updateZoom = typeof updateZoom === 'function' ? updateZoom : () => {};
+		// eslint-disable-next-line @typescript-eslint/no-empty-function
+		this._updateOrigin = typeof updateOrigin === 'function' ? updateOrigin : () => {};
+		this._updateDelay = Number.isInteger(updateDelay) ? updateDelay : 0;
+		this._updateEarly = typeof updateEarly === 'boolean' ? updateEarly : true;
 
 		this.redebounce();
 	}
@@ -210,7 +183,7 @@ export class PanAndZoom implements Iterable<number> {
 	 * @property {Matrix} transform
 	 * @readonly
 	 */
-	get transform(): Matrix {
+	get transform (): Matrix {
 		return this.mergeMatrices(
 			[
 				1, 0, this._panX,
@@ -240,31 +213,31 @@ export class PanAndZoom implements Iterable<number> {
 	 * @example context.setTransform(...panAndZoom);
 	 * @return {Number[6]}
 	 */
-	*[Symbol.iterator](): IterableIterator<number> {
+	*[Symbol.iterator] (): IterableIterator<number> {
 		const [a, c, tx, b, d, ty] = this.transform;
+
 		yield *[a, b, c, d, tx, ty];
 	}
 
-	get pan(): [number, number] {
+	get pan (): [number, number] {
 		return [this._panX, this._panY];
 	}
 
-	set pan(to: string[] | number[]) {
+	set pan (to: [number, number]) {
 		const fromX = this._panX;
 		const fromY = this._panY;
-		const toXNumber = +to[0];
-		const toYNumber = +to[1];
 		const toX = this.clamp(
-			Number.isFinite(toXNumber) ? toXNumber : 0,
+			Number.isFinite(to[0]) ? to[0] : 0,
 			this._minPanX,
 			this._maxPanX
 		);
 		const toY = this.clamp(
-			Number.isFinite(toYNumber) ? toYNumber : 0,
+			Number.isFinite(to[1]) ? to[1] : 0,
 			this._minPanY,
 			this._maxPanY
 		);
-		if(toX !== fromX || toY !== fromY) {
+
+		if (toX !== fromX || toY !== fromY) {
 			this._panX = toX;
 			this._panY = toY;
 			this.updatePan([fromX, fromY], [toX, toY]);
@@ -272,104 +245,97 @@ export class PanAndZoom implements Iterable<number> {
 		}
 	}
 
-	get panX(): number {
+	get panX (): number {
 		return this._panX;
 	}
 
-	set panX(to: number | string) {
+	set panX (to: number) {
 		const from = this._panX;
-		to = +to;
 		to = this.clamp(
 			Number.isFinite(to) ? to : 0,
 			this._minPanX,
 			this._maxPanX
 		);
-		if(to !== from) {
+
+		if (to !== from) {
 			this._panX = to;
 			this.updatePan([from, this._panY], [to, this._panY]);
 			this.update();
 		}
 	}
 
-	get panY(): number {
+	get panY (): number {
 		return this._panY;
 	}
 
-	set panY(to: number | string) {
+	set panY (to: number) {
 		const from = this._panY;
-		to = +to;
 		to = this.clamp(
 			Number.isFinite(to) ? to : 0,
 			this._minPanY,
 			this._maxPanY
 		);
-		if(to !== from) {
+		if (to !== from) {
 			this._panY = to;
 			this.updatePan([this._panX, from], [this._panX, to]);
 			this.update();
 		}
 	}
 
-	get minPanX(): number {
+	get minPanX (): number {
 		return this._minPanX;
 	}
 
-	set minPanX(to: number | string) {
-		to = +to;
-		this._minPanX = Math.min(!Number.isNaN(to) ? to : 0, this._maxPanX);
-		if(this._panX < this._minPanX) this.panX = this._minPanX;
+	set minPanX (to: number) {
+		this._minPanX = Math.min(typeof to === 'number' && !Number.isNaN(to) ? to : 0, this._maxPanX);
+		if (this._panX < this._minPanX) this.panX = this._minPanX;
 	}
 
-	get minPanY(): number {
+	get minPanY (): number {
 		return this._minPanY;
 	}
 
-	set minPanY(to: number | string) {
-		to = +to;
-		this._minPanY = Math.min(!Number.isNaN(to) ? to : 0, this._maxPanY);
-		if(this._panY < this._minPanY) this.panY = this._minPanY;
+	set minPanY (to: number) {
+		this._minPanY = Math.min(typeof to === 'number' && !Number.isNaN(to) ? to : 0, this._maxPanY);
+		if (this._panY < this._minPanY) this.panY = this._minPanY;
 	}
 
-	get maxPanX(): number {
+	get maxPanX (): number {
 		return this._maxPanX;
 	}
 
-	set maxPanX(to: number | string) {
-		to = +to;
-		this._maxPanX = Math.max(!Number.isNaN(to) ? to : 0, this._minPanX);
-		if(this._panX > this._maxPanX) this.panX = this._maxPanX;
+	set maxPanX (to: number) {
+		this._maxPanX = Math.max(typeof to === 'number' && !Number.isNaN(to) ? to : 0, this._minPanX);
+		if (this._panX > this._maxPanX) this.panX = this._maxPanX;
 	}
 
-	get maxPanY(): number {
+	get maxPanY (): number {
 		return this._maxPanY;
 	}
 
-	set maxPanY(to: number | string) {
-		to = +to;
-		this._maxPanY = Math.max(!Number.isNaN(to) ? to : 0, this._minPanY);
-		if(this._panY > this._maxPanY) this.panY = this._maxPanY;
+	set maxPanY (to: number) {
+		this._maxPanY = Math.max(typeof to === 'number' && !Number.isNaN(to) ? to : 0, this._minPanY);
+		if (this._panY > this._maxPanY) this.panY = this._maxPanY;
 	}
 
-	get origin(): [number, number] {
+	get origin (): [number, number] {
 		return [this._originX, this._originY];
 	}
 
-	set origin(to: string[] | number[]) {
+	set origin (to: number[]) {
 		const fromX = this._originX;
 		const fromY = this._originY;
-		const toXNumber = +to[0];
-		const toYNumber = +to[1];
 		const toX = this.clamp(
-			Number.isFinite(toXNumber) ? toXNumber : 0,
+			Number.isFinite(to[0]) ? to[0] : 0,
 			this._minOriginX,
 			this._maxOriginX
 		);
 		const toY = this.clamp(
-			Number.isFinite(toYNumber) ? toYNumber : 0,
+			Number.isFinite(to[1]) ? to[1] : 0,
 			this._minOriginY,
 			this._maxOriginY
 		);
-		if(toX !== fromX || toY !== fromY) {
+		if (toX !== fromX || toY !== fromY) {
 			this._originX = toX;
 			this._originY = toY;
 			this.updateOrigin([fromX, fromY], [toX, toY]);
@@ -377,209 +343,200 @@ export class PanAndZoom implements Iterable<number> {
 		}
 	}
 
-	get originX(): number {
+	get originX (): number {
 		return this._originX;
 	}
 
-	set originX(to: number | string) {
+	set originX (to: number) {
 		const from = this._originX;
-		to = +to;
 		to = this.clamp(
-			!Number.isNaN(to) ? to : 0,
+			typeof to === 'number' && Number.isFinite(to) ? to : 0,
 			this._minOriginX,
 			this._maxOriginX
 		);
-		if(to !== from) {
+		if (to !== from) {
 			this._originX = to;
 			this.updateOrigin([from, this._originY], [to, this._originY]);
 			this.update();
 		}
 	}
 
-	get originY(): number {
+	get originY (): number {
 		return this._originY;
 	}
 
-	set originY(to: number | string) {
+	set originY (to: number) {
 		const from = this._originY;
-		to = +to;
 		to = this.clamp(
-			!Number.isNaN(to) ? to : 0,
+			typeof to === 'number' && Number.isFinite(to) ? to : 0,
 			this._minOriginY,
 			this._maxOriginY
 		);
-		if(to !== from) {
+		if (to !== from) {
 			this._originY = to;
 			this.updateOrigin([this._originX, from], [this._originX, to]);
 			this.update();
 		}
 	}
 
-	get minOriginX(): number {
+	get minOriginX (): number {
 		return this._minOriginX;
 	}
 
-	set minOriginX(to: number | string) {
-		to = +to;
+	set minOriginX (to: number) {
 		this._minOriginX = Math.min(
-			!Number.isNaN(to) ? to : 0,
+			typeof to === 'number' && !Number.isNaN(to) ? to : 0,
 			this._maxOriginX
 		);
-		if(this._originX < this._minOriginX) this.originX = this._minOriginX;
+		if (this._originX < this._minOriginX) this.originX = this._minOriginX;
 	}
 
-	get minOriginY(): number {
+	get minOriginY (): number {
 		return this._minOriginY;
 	}
 
-	set minOriginY(to: number | string) {
-		to = +to;
+	set minOriginY (to: number) {
 		this._minOriginY = Math.min(
-			!Number.isNaN(to) ? to : 0,
+			typeof to === 'number' && !Number.isNaN(to) ? to : 0,
 			this._maxOriginY
 		);
-		if(this._originY < this._minOriginY) this.originY = this._minOriginY;
+		if (this._originY < this._minOriginY) this.originY = this._minOriginY;
 	}
 
-	get maxOriginX(): number {
+	get maxOriginX (): number {
 		return this._maxOriginX;
 	}
 
-	set maxOriginX(to: number | string) {
-		to = +to;
+	set maxOriginX (to: number) {
 		this._maxOriginX = Math.max(
-			!Number.isNaN(to) ? to : 0,
+			typeof to === 'number' && !Number.isNaN(to) ? to : 0,
 			this._minOriginX
 		);
-		if(this._originX > this._maxOriginX) this.originX = this._maxOriginX;
+		if (this._originX > this._maxOriginX) this.originX = this._maxOriginX;
 	}
 
-	get maxOriginY(): number {
+	get maxOriginY (): number {
 		return this._maxOriginY;
 	}
 
-	set maxOriginY(to: number | string) {
-		to = +to;
+	set maxOriginY (to: number) {
 		this._maxOriginY = Math.max(
-			!Number.isNaN(to) ? to : 0,
+			typeof to === 'number' && !Number.isNaN(to) ? to : 0,
 			this._minOriginY
 		);
-		if(this._originY > this._maxOriginY) this.originY = this._maxOriginY;
+		if (this._originY > this._maxOriginY) this.originY = this._maxOriginY;
 	}
 
-	get zoom(): number {
+	get zoom (): number {
 		return this._zoom;
 	}
 
-	set zoom(to: number | string) {
-		to = +to;
+	set zoom (to: number) {
 		const from = this._zoom;
 		to = this.clamp(
 			Number.isFinite(to) ? to : 0,
 			this._minZoom,
 			this._maxZoom
 		);
-		if(to !== from) {
+		if (to !== from) {
 			this._zoom = to;
 			this.updateZoom(from, to);
 			this.update();
 		}
 	}
 
-	get minZoom(): number {
+	get minZoom (): number {
 		return this._minZoom;
 	}
 
-	set minZoom(to: number | string) {
-		to = +to;
-		this._minZoom = Math.min(!Number.isNaN(to) ? to : 0, this._maxZoom);
-		if(this._zoom < this._minZoom) this.zoom = this._minZoom;
+	set minZoom (to: number) {
+		this._minZoom = Math.min(typeof to === 'number' && !Number.isNaN(to) ? to : 0, this._maxZoom);
+		if (this._zoom < this._minZoom) this.zoom = this._minZoom;
 	}
 
-	get maxZoom(): number {
+	get maxZoom (): number {
 		return this._maxZoom;
 	}
 
-	set maxZoom(to: number | string) {
-		to = +to;
-		this._maxZoom = Math.max(!Number.isNaN(to) ? to : 0, this._minZoom);
-		if(this._zoom > this._maxZoom) this.zoom = this._maxZoom;
+	set maxZoom (to: number) {
+		this._maxZoom = Math.max(typeof to === 'number' && !Number.isNaN(to) ? to : 0, this._minZoom);
+		if (this._zoom > this._maxZoom) this.zoom = this._maxZoom;
 	}
 
-	get update(): Function {
-		return "function" === typeof this.debounced.update
+	get update (): UpdateEmptyFunction {
+		return typeof this.debounced.update === 'function'
 			? this.debounced.update
 			: this._update;
 	}
 
-	set update(to: Function) {
-		if("function" !== typeof to) return;
+	set update (to: UpdateEmptyFunction) {
+		if (typeof to !== 'function') return;
 		this._update = to;
-		this.debounced.update = this.debounce(to);
+		this.debounced.update = this.debounce(to) as UpdateEmptyFunction;
 	}
 
-	get updateOrigin(): Function {
-		return "function" === typeof this.debounced.updateOrigin
+	get updateOrigin (): UpdateTupleFunction {
+		return typeof this.debounced.updateOrigin === 'function'
 			? this.debounced.updateOrigin
 			: this._updateOrigin;
 	}
 
-	set updateOrigin(to: Function) {
-		if("function" !== typeof to) return;
+	set updateOrigin (to: UpdateTupleFunction) {
+		if(typeof to !== 'function') return;
 		this._updateOrigin = to;
-		this.debounced.updateOrigin = this.debounce(to);
+		this.debounced.updateOrigin = this.debounce(to) as UpdateTupleFunction;
 	}
 
-	get updatePan(): Function {
-		return "function" === typeof this.debounced.updatePan
+	get updatePan (): UpdateTupleFunction {
+		return typeof this.debounced.updatePan === 'function'
 			? this.debounced.updatePan
 			: this._updatePan;
 	}
 
-	set updatePan(to: Function) {
-		if("function" !== typeof to) return;
+	set updatePan (to: UpdateTupleFunction) {
+		if (typeof to !== 'function') return;
 		this._updatePan = to;
-		this.debounced.updatePan = this.debounce(to);
+		this.debounced.updatePan = this.debounce(to) as UpdateTupleFunction;
 	}
 
-	get updateZoom(): Function {
-		return "function" === typeof this.debounced.updateZoom
+	get updateZoom (): UpdateSingleFunction {
+		return typeof this.debounced.updateZoom === 'function'
 			? this.debounced.updateZoom
 			: this._updateZoom;
 	}
 
-	set updateZoom(to: Function) {
-		if("function" !== typeof to) return;
+	set updateZoom (to: UpdateSingleFunction) {
+		if (typeof to !== 'function') return;
 		this._updateZoom = to;
-		this.debounced.updateZoom = this.debounce(to);
+		this.debounced.updateZoom = this.debounce(to) as UpdateSingleFunction;
 	}
 
-	get updateDelay(): number {
+	get updateDelay (): number {
 		return this._updateDelay;
 	}
 
-	set updateDelay(to: number) {
+	set updateDelay (to: number) {
 		const from = this._updateDelay;
 		to = Math.max(-1, Number.isFinite(to) ? to : 0);
-		if(to !== from) {
+		if (to !== from) {
 			this._updateDelay = from;
 			this.redebounce();
 		}
 	}
 
-	get updateEarly(): boolean {
+	get updateEarly (): boolean {
 		return this._updateEarly;
 	}
 
-	set updateEarly(to: boolean) {
+	set updateEarly (to: boolean) {
 		const from = this._updateEarly;
-		if((to = !!to) !== from) {
+		if (typeof to === 'boolean' && to !== from) {
 			this._updateEarly = from;
 			this.redebounce();
 		}
 	}
 
-	private redebounce(): void {
+	private redebounce (): void {
 		this.update = this._update;
 		this.updateOrigin = this._updateOrigin;
 		this.updatePan = this._updatePan;
@@ -592,10 +549,10 @@ export class PanAndZoom implements Iterable<number> {
 	 * @param  {Number[]} points
 	 * @return {Number[]}
 	 */
-	applyTransform(points: number[][]): number[][] {
+	applyTransform (points: number[][]): number[][] {
 		const results: number[][] = [];
 		const { length } = points;
-		for(let i = 0; i < length; i++) {
+		for (let i = 0; i < length; i++) {
 			const m = this.mergeMatrices(this.transform, [
 				1, 0, points[i][0],
 				0, 1, points[i][1],
@@ -612,16 +569,16 @@ export class PanAndZoom implements Iterable<number> {
 	 * @param  {Number[][]} matrices
 	 * @return {Number[]}
 	 */
-	mergeMatrices(...matrices: Matrix[]): Matrix {
+	mergeMatrices (...matrices: Matrix[]): Matrix {
 		let result =
 			(Array.isArray(matrices[0]) && 9 === matrices[0].length)
 				? matrices[0]
 				: ([1, 0, 0, 0, 1, 0, 0, 0, 1] as Matrix);
 
-		if(matrices.length < 2) return result;
+		if (matrices.length < 2) return result;
 
 		const { length } = matrices;
-		for(let i = 1; i < length; ++i) {
+		for (let i = 1; i < length; ++i) {
 			const [a, b, c, p, q, r, u, v, w] = result;
 
 			const [A, B, C, P, Q, R, U, V, W] = matrices[i];
@@ -641,41 +598,42 @@ export class PanAndZoom implements Iterable<number> {
 		return result;
 	}
 
+	private clamp (n: number, min: number, max: number): number {
+		return Math.min(Math.max(n, min), max);
+	}
+
 	/**
 	 * Stop a callback from firing too quickly.
 	 *
 	 * @param  {Function} fn
 	 * @return {Function}
 	 */
-	private debounce(fn: Function): Function {
+	private debounce<T extends (...args: Parameters<T>) => void> (fn: T): UpdateEmptyFunction | UpdateSingleFunction | UpdateTupleFunction {
 		const limit = this._updateDelay;
 		const asap = this._updateEarly;
 
-		if(limit < 0) return fn;
+		if (limit < 0) return fn;
 
-		let started: number, context: PanAndZoom | null, args: IArguments | null, timing: ReturnType<typeof setTimeout> | number | null;
-		function delayed(): void {
+		let started: number, inputArgs: Parameters<T> | null, timing: ReturnType<typeof setTimeout> | null;
+
+		const delayed = (): void => {
 			const timeSince = Date.now() - started;
-			if(timeSince >= limit) {
-				if(!asap) fn.apply(context, args);
-				if(timing !== null) clearTimeout(timing);
-				timing = context = args = null;
-			}
-			else timing = setTimeout(delayed, limit - timeSince);
+			if (timeSince >= limit) {
+				if (!asap) fn.apply(this, inputArgs as Parameters<T>);
+				if (timing !== null) clearTimeout(timing);
+				timing = inputArgs = null;
+			} else timing = setTimeout(delayed, limit - timeSince);
 		}
-		// eslint-disable-next-line
-		return function(this: PanAndZoom) {
-			// eslint-disable-next-line
-			context = this;
-			// eslint-disable-next-line
-			args = arguments;
-			if(0 === limit) return fn.apply(context, args);
+
+		return (...args: Parameters<T>): void => {
+			inputArgs = args
+			if (limit === 0) return fn.apply(this, args);
 			started = Date.now();
-			if(null === timing || undefined === timing) {
-				if(asap) fn.apply(context, args);
+			if (timing === null || timing === undefined) {
+				if (asap) fn.apply(this, args);
 				timing = setTimeout(delayed, limit);
 			}
-		};
+		}
 	}
 
 	/**
@@ -683,11 +641,7 @@ export class PanAndZoom implements Iterable<number> {
 	 * @example el.style.transform = panAndZoom;
 	 * @return {String}
 	 */
-	toString(): string {
+	toString (): string {
 		return `matrix(${[...this].join()})`;
-	}
-
-	private clamp(n: number, min: number, max: number): number {
-		return Math.min(Math.max(n, min), max);
 	}
 }

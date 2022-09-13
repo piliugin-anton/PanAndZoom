@@ -79,39 +79,6 @@ describe("PanAndZoom", () => {
 				paz.maxPanY = 100; expect(paz.maxPanY).to.equal(100);
 			});
 			
-			it("coerces values to numbers during initialisation", () => {
-				const paz = new PanAndZoom({
-					panX:    "10",
-					panY:    "20",
-					minPanX: "-100",
-					minPanY: "-200",
-					maxPanX: "+100",
-					maxPanY: "+200",
-				});
-				expect(paz).to.have.property("panX").which.is.a("number").that.equals(10);
-				expect(paz).to.have.property("panY").which.is.a("number").that.equals(20);
-				expect(paz).to.have.property("minPanX").which.is.a("number").that.equals(-100);
-				expect(paz).to.have.property("minPanY").which.is.a("number").that.equals(-200);
-				expect(paz).to.have.property("maxPanX").which.is.a("number").that.equals(+100);
-				expect(paz).to.have.property("maxPanY").which.is.a("number").that.equals(+200);
-			});
-			
-			it("coerces values to numbers during assignment", () => {
-				const paz   = new PanAndZoom();
-				paz.panX    = "-20";
-				paz.panY    = {valueOf(){ return "-40"; }} as any;
-				paz.minPanX = "-200";
-				paz.minPanY = "-300";
-				paz.maxPanX = "2.5";
-				paz.maxPanY = "-.5";
-				expect(paz).to.have.property("panX").which.is.a("number").that.equals(-20);
-				expect(paz).to.have.property("panY").which.is.a("number").that.equals(-40);
-				expect(paz).to.have.property("minPanX").which.is.a("number").that.equals(-200);
-				expect(paz).to.have.property("minPanY").which.is.a("number").that.equals(-300);
-				expect(paz).to.have.property("maxPanX").which.is.a("number").that.equals(+2.5);
-				expect(paz).to.have.property("maxPanY").which.is.a("number").that.equals(-0.5);
-			});
-			
 			it("treats invalid values as zero", () => {
 				const paz = new PanAndZoom({
 					panX:     5,
@@ -125,8 +92,29 @@ describe("PanAndZoom", () => {
 				paz.panY    = {} as any;        expect(paz.panY).to.be.a("number").that.equals(0);
 				paz.minPanX = undefined as any; expect(paz.minPanX).to.be.a("number").that.equals(0);
 				paz.minPanY = null as any;      expect(paz.minPanY).to.be.a("number").that.equals(0);
-				paz.maxPanX = "Nope";           expect(paz.maxPanX).to.be.a("number").that.equals(0);
+				paz.maxPanX = "Nope" as any;    expect(paz.maxPanX).to.be.a("number").that.equals(0);
 				paz.maxPanY = NaN;              expect(paz.maxPanY).to.be.a("number").that.equals(0);
+			});
+
+			it("calls a callback after delay", function (done) {
+				this.timeout(100);
+
+				const paz = new PanAndZoom({
+					updateDelay: 10,
+					updateEarly: false,
+					updatePan(from, to) {
+						const [toX, toY] = to;
+						expect(toX).to.be.a("number").that.equals(-15);
+						expect(toY).to.be.a("number").that.equals(-25);
+						done();
+					}
+				});
+
+				paz.panX = 15;
+				paz.panY = 25;
+
+				paz.panX = -15;
+				paz.panY = -25;
 			});
 		});
 		
@@ -175,28 +163,31 @@ describe("PanAndZoom", () => {
 				expect(paz.panY).to.equal(75);
 			});
 			
-			it("coerces non-numeric elements during assignment", () => {
-				const paz = new PanAndZoom();
-				paz.pan = ["-50", "+650"];
-				expect(paz.panX).to.be.a("number").that.equals(-50);
-				expect(paz.panY).to.be.a("number").that.equals(650);
-				expect(paz.pan).to.eql([-50, 650]);
-			});
-			
-			it("doesn't modify arrays when coercing values", () => {
-				const paz = new PanAndZoom();
-				const pan = ["-50", "+650"];
-				paz.pan = pan;
-				expect(pan).to.eql(["-50", "+650"]);
-				expect(paz.pan).to.eql([-50, 650]);
-			});
-			
 			it("treats invalid elements as zero", () => {
 				const paz = new PanAndZoom({panX: 5, panY: 5});
-				paz.pan = [[] as any, "Invalid"];
+				paz.pan = [[] as any, "Invalid" as any];
 				expect(paz.panX).to.equal(0);
 				expect(paz.panY).to.equal(0);
 				expect(paz.pan).to.eql([0, 0]);
+			});
+
+			it("calls a callback after delay", function (done) {
+				this.timeout(100);
+
+				const paz = new PanAndZoom({
+					updateDelay: 10,
+					updateEarly: false,
+					updatePan(from, to) {
+						const [toX, toY] = to;
+						expect(toX).to.be.a("number").that.equals(-15);
+						expect(toY).to.be.a("number").that.equals(-25);
+						done();
+					}
+				});
+
+				paz.pan = [15, 25];
+
+				paz.pan = [-15, -25];
 			});
 		});
 	});
@@ -264,27 +255,6 @@ describe("PanAndZoom", () => {
 			expect(paz.zoom).to.equal(0.5);
 		});
 		
-		it("coerces values to numbers during initialisation", () => {
-			const paz = new PanAndZoom({
-				zoom:    "0.75",
-				minZoom: "-1.45",
-				maxZoom: "+2.35",
-			});
-			expect(paz).to.have.property("zoom").which.is.a("number").that.equals(0.75);
-			expect(paz).to.have.property("minZoom").which.is.a("number").that.equals(-1.45);
-			expect(paz).to.have.property("maxZoom").which.is.a("number").that.equals(+2.35);
-		});
-		
-		it("coerces values to numbers during assignment", () => {
-			const paz   = new PanAndZoom();
-			paz.zoom    = "2.5";
-			paz.minZoom = {valueOf(){ return "-2.3"; }} as any;
-			paz.maxZoom = "+5.03";
-			expect(paz).to.have.property("zoom").which.is.a("number").that.equals(2.5);
-			expect(paz).to.have.property("minZoom").which.is.a("number").that.equals(-2.3);
-			expect(paz).to.have.property("maxZoom").which.is.a("number").that.equals(+5.03);
-		});
-		
 		it("treats invalid values as zero", () => {
 			const paz = new PanAndZoom({
 				zoom:    1.5,
@@ -293,7 +263,7 @@ describe("PanAndZoom", () => {
 			});
 			paz.zoom    = [] as any;    expect(paz.zoom).to.be.a("number").that.equals(0);
 			paz.minZoom = {} as any;    expect(paz.minZoom).to.be.a("number").that.equals(0);
-			paz.maxZoom = "Invalid";    expect(paz.maxZoom).to.be.a("number").that.equals(0);
+			paz.maxZoom = "Invalid" as any;    expect(paz.maxZoom).to.be.a("number").that.equals(0);
 		});
 		
 		it("truncates out-of-range values when correcting invalid values", () => {
@@ -307,6 +277,23 @@ describe("PanAndZoom", () => {
 			paz.zoom    = -0.5;
 			paz.minZoom = {} as any;
 			expect(paz.zoom).to.equal(0);
+		});
+
+		it("calls a callback after delay", function (done) {
+			this.timeout(100);
+
+			const paz = new PanAndZoom({
+				updateDelay: 10,
+				updateEarly: false,
+				updateZoom(from, to) {
+					expect(to).to.be.a("number").that.equals(2);
+					done();
+				}
+			});
+
+			paz.zoom = 1.5;
+
+			paz.zoom = 2;
 		});
 	});
 
@@ -388,39 +375,6 @@ describe("PanAndZoom", () => {
 				paz.maxOriginY = 100; expect(paz.maxOriginY).to.equal(100);
 			});
 			
-			it("coerces values to numbers during initialisation", () => {
-				const paz = new PanAndZoom({
-					originX:    "10",
-					originY:    "20",
-					minOriginX: "-100",
-					minOriginY: "-200",
-					maxOriginX: "+100",
-					maxOriginY: "+200",
-				});
-				expect(paz).to.have.property("originX").which.is.a("number").that.equals(10);
-				expect(paz).to.have.property("originY").which.is.a("number").that.equals(20);
-				expect(paz).to.have.property("minOriginX").which.is.a("number").that.equals(-100);
-				expect(paz).to.have.property("minOriginY").which.is.a("number").that.equals(-200);
-				expect(paz).to.have.property("maxOriginX").which.is.a("number").that.equals(+100);
-				expect(paz).to.have.property("maxOriginY").which.is.a("number").that.equals(+200);
-			});
-			
-			it("coerces values to numbers during assignment", () => {
-				const paz      = new PanAndZoom();
-				paz.originX    = "-20";
-				paz.originY    = {valueOf(){ return "-40"; }} as any;
-				paz.minOriginX = "-200";
-				paz.minOriginY = "-300";
-				paz.maxOriginX = "2.5";
-				paz.maxOriginY = "-.5";
-				expect(paz).to.have.property("originX").which.is.a("number").that.equals(-20);
-				expect(paz).to.have.property("originY").which.is.a("number").that.equals(-40);
-				expect(paz).to.have.property("minOriginX").which.is.a("number").that.equals(-200);
-				expect(paz).to.have.property("minOriginY").which.is.a("number").that.equals(-300);
-				expect(paz).to.have.property("maxOriginX").which.is.a("number").that.equals(+2.5);
-				expect(paz).to.have.property("maxOriginY").which.is.a("number").that.equals(-0.5);
-			});
-			
 			it("treats invalid values as zero", () => {
 				const paz = new PanAndZoom({
 					originX:     5,
@@ -434,8 +388,29 @@ describe("PanAndZoom", () => {
 				paz.originY    = {} as any;        expect(paz.originY).to.be.a("number").that.equals(0);
 				paz.minOriginX = undefined as any; expect(paz.minOriginX).to.be.a("number").that.equals(0);
 				paz.minOriginY = null as any;      expect(paz.minOriginY).to.be.a("number").that.equals(0);
-				paz.maxOriginX = "Nope";           expect(paz.maxOriginX).to.be.a("number").that.equals(0);
+				paz.maxOriginX = "Nope" as any;    expect(paz.maxOriginX).to.be.a("number").that.equals(0);
 				paz.maxOriginY = NaN;              expect(paz.maxOriginY).to.be.a("number").that.equals(0);
+			});
+
+			it("calls a callback after delay", function (done) {
+				this.timeout(100);
+
+				const paz = new PanAndZoom({
+					updateDelay: 10,
+					updateEarly: false,
+					updateOrigin(from, to) {
+						const [toX, toY] = to;
+						expect(toX).to.be.a("number").that.equals(-15);
+						expect(toY).to.be.a("number").that.equals(-25);
+						done();
+					}
+				});
+
+				paz.originX = 15;
+				paz.originY = 25;
+
+				paz.originX = -15;
+				paz.originY = -25;
 			});
 		});
 
@@ -484,28 +459,31 @@ describe("PanAndZoom", () => {
 				expect(paz.originY).to.equal(75);
 			});
 			
-			it("coerces non-numeric elements during assignment", () => {
-				const paz = new PanAndZoom();
-				paz.origin = ["-50", "+650"];
-				expect(paz.originX).to.be.a("number").that.equals(-50);
-				expect(paz.originY).to.be.a("number").that.equals(650);
-				expect(paz.origin).to.eql([-50, 650]);
-			});
-			
-			it("doesn't modify arrays when coercing values", () => {
-				const paz = new PanAndZoom();
-				const origin = ["-50", "+650"];
-				paz.origin = origin;
-				expect(origin).to.eql(["-50", "+650"]);
-				expect(paz.origin).to.eql([-50, 650]);
-			});
-			
 			it("treats invalid elements as zero", () => {
 				const paz = new PanAndZoom({originX: 5, originY: 5});
 				paz.origin = [[] as any, "Invalid"];
 				expect(paz.originX).to.equal(0);
 				expect(paz.originY).to.equal(0);
 				expect(paz.origin).to.eql([0, 0]);
+			});
+
+			it("calls a callback after delay", function (done) {
+				this.timeout(100);
+
+				const paz = new PanAndZoom({
+					updateDelay: 10,
+					updateEarly: false,
+					updateOrigin(from, to) {
+						const [toX, toY] = to;
+						expect(toX).to.be.a("number").that.equals(-15);
+						expect(toY).to.be.a("number").that.equals(-25);
+						done();
+					}
+				});
+
+				paz.origin = [15, 25];
+
+				paz.origin = [-15, -25];
 			});
 		});
 	});
