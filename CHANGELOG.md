@@ -3,10 +3,10 @@ Change Log
 
 This project honours [Semantic Versioning](http://semver.org/).
 
-[Unpublished]: ../../compare/v1.0.0...HEAD
+[Unpublished]: ../../compare/v2.0.0...HEAD
 
 
-[Unpublished]
+[2.0.0]
 ------------------------------------------------------------------------
 #### Breaking changes! Starting from version 2.0.0 only number values are accepted
 
