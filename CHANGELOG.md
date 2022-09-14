@@ -6,7 +6,7 @@ This project honours [Semantic Versioning](http://semver.org/).
 [Unpublished]: ../../compare/v2.0.0...HEAD
 
 
-[2.0.0]
+[v2.0.0]
 ------------------------------------------------------------------------
 #### Breaking changes! Starting from version 2.0.0 only number values are accepted
 
