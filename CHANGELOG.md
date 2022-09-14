@@ -16,10 +16,12 @@ This project honours [Semantic Versioning](http://semver.org/).
 
 [`Symbol.iterator`]: https://mdn.io/JS/Symbol.iterator
 
+[v2.0.0]: https://github.com/piliugin-anton/PanAndZoom/releases/tag/v2.0.0
+
 
 [v1.0.0]
 ------------------------------------------------------------------------
 **June 25th, 2018**  
 Initial release of pan-and-zoom component.
 
-[v1.0.0]: https://github.com/Alhadis/PanAndZoom/releases/tag/v1.0.0
+[v1.0.0]: https://github.com/piliugin-anton/PanAndZoom/releases/tag/v1.0.0
